@@ -164,9 +164,7 @@ SpadInterpretStream(str, source, interactive?) ==
 
     interactive? =>
         if printFirstPrompt?() then
-            ioHook("startPrompt")
             princPrompt()
-            ioHook("endOfPrompt")
         intloopReadConsole('"", str)
         []
     intloopInclude (source,0)
