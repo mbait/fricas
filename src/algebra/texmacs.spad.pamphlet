@@ -581,10 +581,10 @@ have to be switched by swapping names.
          --OverBar
       op = "ROOT" =>
         null args => ""
-        tmp : S := group formatMml(first args, minPrec)
-        null rest args => concat ["<msqrt>",tmp,"</msqrt>"]
-        group concat
-          ["<mroot><mrow>",tmp,"</mrow>",formatMml(first rest args, minPrec),"</mroot>"]
+        tmp : S := formatMml(first args, minPrec)
+        null rest args => concat ["(sqrt ",tmp,")"]
+        concat
+          ["(sqrt ",tmp," ",formatMml(first rest args, minPrec),")"]
       op = "SEGMENT" =>
         tmp : S := concat [formatMml(first args, minPrec),"<mo>..</mo>"]
         group
