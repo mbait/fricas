@@ -1003,20 +1003,20 @@ have to be switched by swapping names.
       -- summation(operator(f)(i)+1,i=1..n) having identical displays as of
       -- 2007-12-21
       op :=
-        op = ","     => "<mo>,</mo>" --originally , \:
+        op = ","     => " _",_" " --originally , \:
         op = ";"     => "<mo>;</mo>" --originally ; \: should figure these out
         op = "*"     =>
             checkargs := true
-            "<mo>&#x02062;</mo>"
+            " _"*_" "
         -- InvisibleTimes
-        op = " "     => "<mspace width='0.5em'/>"
+        op = " "     => " _" _" "
         op = "ROW"   => "</mtd><mtd>"
         op = "+"     =>
             checkargs := true
-            "<mo>+</mo>"
+            " _"+_" "
         op = "-"     =>
             checkargs := true
-            "<mo>-</mo>"
+            " _"-_" "
         op
       l : L S := nil
       opPrec := naryPrecs.p
