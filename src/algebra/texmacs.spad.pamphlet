@@ -1083,20 +1083,19 @@ have to be switched by swapping names.
                    nstr := concat [nstr," ",
                      elt(str,segment(1,intSplitLen)$US)]
                    str := elt(str,segment(intSplitLen+1)$US)
-                 empty? nstr => concat ["<mn>",str,"</mn>"]
+                 empty? nstr => concat[" _"",str,"_" "]
                  nstr :=
                    empty? str => nstr
                    concat [nstr," ",str]
                  concat ["<mn>",elt(nstr,segment(2)$US),"</mn>"]
-            else str := concat ["<mn>",str,"</mn>"]
-        str = "%pi" => "<mi>&#x003C0;</mi>"
+            else concat[" _"",str,"_" "]
+        str = "%pi" => "<pi>"
         -- pi
-        str = "%e"  => "<mi>&#x02147;</mi>"
+        str = "%e"  => "e"
         -- ExponentialE
-        str = "%i"  => "<mi>&#x02148;</mi>"
+        str = "%i"  => "i"
         -- ImaginaryI
         len > 0 and str.1 = char "%" => concat(concat("<mi>",str),"</mi>")
-        len > 1 and digit? str.1 => concat ["<mn>",str,"</mn>"] -- should handle floats
         -- presumably this is a literal string
         len > 0 and str.1 = char "_"" =>
           concat(concat("<mtext>",str),"</mtext>")
@@ -1109,7 +1108,7 @@ have to be switched by swapping names.
           -- where it arises.  Removed 2007-02-14
           concat(concat("<mtext>",str),"</mtext>")
         -- if we get to here does that mean it's a variable?
-        concat ["<mi>",str,"</mi>"]
+        group concat[" _"",str,"_" "]
       l : L E := (expr pretend L E)
       null l => blank
       op : S := stringify first l
