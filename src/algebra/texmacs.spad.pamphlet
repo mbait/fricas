@@ -531,13 +531,13 @@ have to be switched by swapping names.
       concat ["(concat ",str,")"]
 
     addBraces str ==
-      concat ["<mo>{</mo>",str,"<mo>}</mo>"]
+      concat [" _"{_" ",str," _"}_" "]
 
     addBrackets str ==
-      concat ["<mo>[</mo>",str,"<mo>]</mo>"]
+      concat [" _"[_" ",str," _"]_" "]
 
     parenthesize str ==
-      concat ["<mo>(</mo>",str,"<mo>)</mo>"]
+      concat [" _"(_" ",str," _")_" "]
 
     precondition expr ==
       outputTran$Lisp expr
