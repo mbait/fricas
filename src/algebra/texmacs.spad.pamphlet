@@ -1095,7 +1095,7 @@ have to be switched by swapping names.
         -- ExponentialE
         str = "%i"  => "i"
         -- ImaginaryI
-        len > 0 and str.1 = char "%" => concat(concat("<mi>",str),"</mi>")
+        len > 0 and str.1 = char "%" => concat(concat(" _"",str),"_" ")
         -- presumably this is a literal string
         len > 0 and str.1 = char "_"" =>
           concat(concat("<mtext>",str),"</mtext>")
@@ -1106,7 +1106,7 @@ have to be switched by swapping names.
           -- We want to preserve spacing, so use a roman font.
           -- What's this for?  Leave the \rm in for now so I can see
           -- where it arises.  Removed 2007-02-14
-          concat(concat("<mtext>",str),"</mtext>")
+          concat[" _"" str "_" "]
         -- if we get to here does that mean it's a variable?
         group concat[" _"",str,"_" "]
       l : L E := (expr pretend L E)
