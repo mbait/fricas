@@ -948,9 +948,9 @@ have to be switched by swapping names.
       s2 : S := formatMml(first rest args, opPrec)
       op :=
         op = "|"     =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
-        op = "^"    =>  s := concat ["<msup><mrow>",s1,"</mrow><mrow>",s2,"</mrow></msup>"]
-        op = "/"     =>  s := concat ["<mfrac><mrow>",s1,"</mrow><mrow>",s2,"</mrow></mfrac>"]
-        op = "OVER"  =>  s := concat ["<mfrac><mrow>",s1,"</mrow><mrow>",s2,"</mrow></mfrac>"]
+        op = "^"    =>  s := concat ["(concat " s1 "(rsup " s2 "))"]
+        op = "/"     =>  s := concat ["(frac ",s1," ",s2,")"]
+        op = "OVER"  =>  s := concat ["(frac ",s1," ",s2,")"]
         op = "+->"   =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
         s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
       group
