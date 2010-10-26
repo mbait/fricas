@@ -916,7 +916,7 @@ have to be switched by swapping names.
           "</mtd></mtr></mtable>"]
 
     formatFunction(op : S, args : L E, prec : I) : S ==
-      group concat ["<mo>",op,"</mo>",parenthesize formatNary(",",args,minPrec)]
+      group concat [op,parenthesize formatNary(",",args,minPrec)]
 
     formatNullary(op : S) ==
       op = "NOTHING" => ""
@@ -926,7 +926,7 @@ have to be switched by swapping names.
       p : I := position(op,unaryOps)
       p < 1 => error "unknown unary op"
       opPrec := unaryPrecs.p
-      s : S := concat ["<mo>",op,"</mo>",formatMml(arg,opPrec)]
+      s : S := concat ["(concat _"",op,"_" ",formatMml(arg,opPrec), ")"]
       opPrec < prec => group parenthesize s
       op = "-" => s
       group s
