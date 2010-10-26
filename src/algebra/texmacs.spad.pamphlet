@@ -298,22 +298,22 @@ returning Void.  I really only need the one coerce function.
 
     coerceS(expr : E): S ==
       s : S := postcondition formatMml(precondition expr, minPrec)
-      sayTeX$Lisp "<math xmlns=_"http://www.w3.org/1998/Math/MathML_" mathsize=_"big_" display=_"block_">"
+      sayTeX$Lisp "scheme: (with _"mode_" _"math_""
       displayElt(s)
-      sayTeX$Lisp "</math>"
+      sayTeX$Lisp ")"
       s
 
     coerceL(expr : E): S ==
       s : S := postcondition formatMml(precondition expr, minPrec)
-      sayTeX$Lisp "<math xmlns=_"http://www.w3.org/1998/Math/MathML_" mathsize=_"big_" display=_"block_">"
+      sayTeX$Lisp "scheme: (with _"mode_" _"math_""
       sayTeX$Lisp s
-      sayTeX$Lisp "</math>"
+      sayTeX$Lisp ")"
       s
 
     display(texmacs : S): Void ==
-      sayTeX$Lisp "<math xmlns=_"http://www.w3.org/1998/Math/MathML_" mathsize=_"big_" display=_"block_">"
+      sayTeX$Lisp "scheme: (with _"mode_" _"math_""
       sayTeX$Lisp texmacs
-      sayTeX$Lisp "</math>"
+      sayTeX$Lisp ")"
       void()$Void
 
 
@@ -528,7 +528,7 @@ have to be switched by swapping names.
 
 
     group str ==
-      concat ["<mrow>",str,"</mrow>"]
+      concat ["(concat ",str,")"]
 
     addBraces str ==
       concat ["<mo>{</mo>",str,"<mo>}</mo>"]
