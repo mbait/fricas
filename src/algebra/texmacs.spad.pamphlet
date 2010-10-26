@@ -137,7 +137,7 @@ TexmacsFormat(): public == private where
     binaryPrecs   : L I := [0,0,900, 700,400,400,400,   700]$(L I)
 
     naryOps       : L S := ["-","+","*",blank,",",";"," ","ROW","",
-       " \cr ","&","</mtd></mtr><mtr><mtd>"]$(L S)
+       " \cr ","&",")) (row (cell "]$(L S)
     naryPrecs     : L I := [700,700,800,  800,110,110,  0,    0, 0,
              0,  0,   0]$(L I)
     naryNGOps     : L S := ["ROW","&"]$(L S)
@@ -911,9 +911,9 @@ have to be switched by swapping names.
     formatMatrix(args : L E) : S ==
       -- format for args is [[ROW ...],[ROW ...],[ROW ...]]
       -- generate string for formatting columns (centered)
-      group addBrackets concat
-        ["<mtable><mtr><mtd>",formatNaryNoGroup("</mtd></mtr><mtr><mtd>",args,minPrec),
-          "</mtd></mtr></mtable>"]
+      group concat
+        ["(matrix (tformat (table (row (cell ",formatNaryNoGroup(")) (row (cell ",args,minPrec),
+          ")))))"]
 
     formatFunction(op : S, args : L E, prec : I) : S ==
       group concat [op,parenthesize formatNary(",",args,minPrec)]
@@ -1010,7 +1010,7 @@ have to be switched by swapping names.
             " _"*_" "
         -- InvisibleTimes
         op = " "     => " _" _" "
-        op = "ROW"   => "</mtd><mtd>"
+        op = "ROW"   => ") (cell "
         op = "+"     =>
             checkargs := true
             " _"+_" "
