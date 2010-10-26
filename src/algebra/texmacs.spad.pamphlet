@@ -897,7 +897,7 @@ have to be switched by swapping names.
           u1 := segment(1,i-1)$US
           u2 := segment(i+2,#integrand)$US
           integrand := concat [integrand.u1,bvarS,integrand.u2]
-        concat ["<mrow><mo>&#x0222B;</mo>" integrand "<mo>&#x02146;</mo><mi>" bvarS "</mi></mrow>"]
+        concat ["(concat (big _"int_") " integrand " _"*d" bvarS "_")"]
 
       lowlim : S := stringify first args
       highlim : S := stringify first rest args
