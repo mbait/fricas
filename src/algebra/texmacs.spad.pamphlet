@@ -158,9 +158,9 @@ TexmacsFormat(): public == private where
         "cosh", "coth", "csch", "sech", "sinh", "tanh",
           "acos","asin","atan","erf","...","$","infinity","Gamma"]
     specialStringsInMML : L S :=
-      ["<mo>cos</mo>","<mo>cot</mo>","<mo>csc</mo>","<mo>log</mo>","<mo>sec</mo>","<mo>sin</mo>","<mo>tan</mo>",
-        "<mo>cosh</mo>","<mo>coth</mo>","<mo>csch</mo>","<mo>sech</mo>","<mo>sinh</mo>","<mo>tanh</mo>",
-          "<mo>arccos</mo>","<mo>arcsin</mo>","<mo>arctan</mo>","<mo>erf</mo>","<mo>&#x2026;</mo>","<mo>$</mo>","<mo>&#x221E;</mo>","<mo>&#x0413;</mo>"]
+      ["_"cos_"","_"cot_"","_"csc_"","_"log_"","_"sec_"","_"sin_"","_"tan_"",
+        "_"cosh_"","_"coth_"","_"csch_"","_"sech_"","_"sinh_"","_"tanh_"",
+          "_"arccos_"","_"arcsin_"","_"arctan_"","_"erf_"","_"<cdots>_"","_"$_"","_"<infty>_"","_"<Gamma>_""]
 
 @
 \subsection{Private Function Declarations}
