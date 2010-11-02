@@ -586,7 +586,7 @@ have to be switched by swapping names.
         concat
           ["(sqrt ",tmp," ",formatMml(first rest args, minPrec),")"]
       op = "SEGMENT" =>
-        tmp : S := concat [formatMml(first args, minPrec),"<mo>..</mo>"]
+        tmp : S := concat [formatMml(first args, minPrec),"_"<ldots>_""]
         group
           null rest args =>  tmp
           concat [tmp,formatMml(first rest args, minPrec)]
