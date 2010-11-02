@@ -996,7 +996,7 @@ have to be switched by swapping names.
            tmpS : S := stringify first args
            position("ZAG",tmpS,1) > 0 => formatZag(args)
 --         position("ZAG",tmpS,1) > 0 => formatZag1(args)
-           concat [formatMml(first args,minPrec) "<mo>+</mo>" formatZag(rest args)]
+           concat [formatMml(first args,minPrec) " _"+_" " formatZag(rest args)]
       -- At least for the ops "*","+","-" we need to test to see if a sigma or pi
       -- is one of their arguments because we might need parentheses as indicated
       -- by the problem with summation(operator(f)(i),i=1..n)+1 versus
@@ -1049,11 +1049,11 @@ have to be switched by swapping names.
       -- expressions
       tmpZag : L E := first args pretend L E
       -- may want to test that tmpZag contains 'ZAG'
-      #args > 1 => "<mfrac>"formatMml(first rest tmpZag,minPrec)"<mrow><mn>"formatMml(first rest rest tmpZag,minPrec)"</mn><mo>+</mo>"formatZag(rest args)"</mrow></mfrac>"
+      #args > 1 => "(frac "formatMml(first rest tmpZag,minPrec)"(concat "formatMml(first rest rest tmpZag,minPrec)" _"+_" "formatZag(rest args)"))"
       (first args = "...":: E)@Boolean => "<mo>&#x2026;</mo>"
       op:S := stringify first args
       position("ZAG",op,1) > 0 =>
-        "<mfrac>"formatMml(first rest tmpZag,minPrec)formatMml(first rest rest tmpZag,minPrec)"</mfrac>"
+        "(frac "formatMml(first rest tmpZag,minPrec)formatMml(first rest rest tmpZag,minPrec)")"
       error "formatZag: Last argument in ZAG construct has unknown operator: "op
 
     formatZag1(args : L E) : S ==
@@ -1061,7 +1061,7 @@ have to be switched by swapping names.
     -- use a table
     -- {{ZAG}{1}{7}}
       tmpZag : L E := first args pretend L E
-      #args > 1 => "<mfrac>"formatMml(first rest tmpZag,minPrec)"<mrow><mn>"formatMml(first rest rest tmpZag,minPrec)"</mn><mo>+</mo>"formatZag(rest args)"</mrow></mfrac>"
+      #args > 1 => "(frac "formatMml(first rest tmpZag,minPrec)"(concat "formatMml(first rest rest tmpZag,minPrec)" _"+_" "formatZag(rest args)"))"
       (first args = "...":: E)@Boolean => "<mo>&#x2026;</mo>"
       error "formatZag1: Unexpected kind of ZAG"
 
