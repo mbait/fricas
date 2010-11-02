@@ -952,7 +952,7 @@ have to be switched by swapping names.
         op = "/"     =>  s := concat ["(frac ",s1," ",s2,")"]
         op = "OVER"  =>  s := concat ["(frac ",s1," ",s2,")"]
         op = "+->"   =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
-        s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
+        s := concat ["(concat ",s1," _"",op,"_" ",s2,")"]
       group
         op = "OVER" => s
 --        opPrec < prec => parenthesize s
