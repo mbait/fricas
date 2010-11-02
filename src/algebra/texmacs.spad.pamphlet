@@ -777,12 +777,12 @@ have to be switched by swapping names.
       while position(commaTest,commaS,1) > 0 repeat
         i := i+1
         commaTest := commaTest","
-      s : S := "<msup><mi>"funcS"</mi><mrow>"
+      s : S := "(concat _""funcS"_" (rprime _""
       j : I := 0
       while j < i repeat
-        s := s"<mo>&#x02032;</mo>"
+        s := s"'"
         j := j + 1
-      s := s"</mrow></msup><mo>&#x02061;</mo><mo>(</mo>"formatMml(first args,minPrec)"<mo>)</mo>"
+      s := s"_") _"(_" "formatMml(first args,minPrec)" _")_")"
 
     formatSuperSub1(expr : E, args : L E, opPrec : I) : S ==
       -- This one produces ordinary derivatives with differential notation,
