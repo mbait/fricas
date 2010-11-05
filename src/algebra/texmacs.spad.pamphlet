@@ -1098,7 +1098,7 @@ have to be switched by swapping names.
         len > 0 and str.1 = char "%" => concat(concat(" _"",str),"_" ")
         -- presumably this is a literal string
         len > 0 and str.1 = char "_"" =>
-          concat(concat("<mtext>",str),"</mtext>")
+          concat(concat("(concat ",str),")")
         len = 1 and str.1 = char " " => " "
         (i := position(str,specialStrings)) > 0 =>
           specialStringsInMML.i
