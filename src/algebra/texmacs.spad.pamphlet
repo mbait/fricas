@@ -12,54 +12,92 @@ special scheme code for TeXmacs.
 \tableofcontents
 \eject
 \section{About this module}
-
 The most of this code were copy-n-pasted from MathML format package. Although I
-am going to make stand alone fully-functional TeXmacs package I left many
+am going to make stand alone fully-functional TeXmacs package I've left many
 comments about the code untouched in order to understand the code quicker. They
 will be removed as soon as they won't be needed.
-
 \section{Test Cases}
-
+The testing is made with the following commands executed before the all others: \\
+\\ {\tt
+of1 := ('f)::OutputForm \\
+of2 := ('z)::OutputForm \\
+of3:=('+)::OutputForm \\
+} \\
 Here's a list of test cases that currently format correctly:
-
-1. (x+y)^2
-
-2. integrate(x^x,x)
-
-3. integral(x^x,x)
-
-4. (5 + sqrt 63 + sqrt 847)^(1/3)
-
-5. set $[$1,2,3$]$
-
-6. multiset $[$x rem 5 for x in primes(2,1000)$]$
-
-7. series(sin(a*x),x=0)
-
-8. matrix $[$ $[$x^i + y^j for i in 1..10$]$ for j in 1..10$]$
-
-9. y := operator 'y
-   a. D(y(x,z),$[$x,x,z,x$]$)
-   b. D(y x,x,2)
-
-10. x := series 'x
-    a. sin(1+x)
-
-11. series(1/log(y),y=1)
-
-12. y:UTS(FLOAT,'z,0) := exp(z)
-
-13. a. c := continuedFraction(314159/100000)
-    b. c := continuedFraction(14159/100000)
-    c. c := continuedFraction(3,repeating [1], repeating [3,6])
-
-14. F := operator F
-    x := operator x
-    y := operator y
-    a := F(x z,y z,z^2) + x y(z+1)
-    D(a,z)
-
-The \spadtype{TexFormat} domain has the capability to format an object with
+\begin{enumerate}
+\tt
+\item x
+\item x + y
+\item x + y * z
+\item (5 + sqrt 63 + sqrt 847)\verb|^|(1/3)
+\item set [1,2,3]
+\item integrate(x\verb|^|x, x)
+\item integral(x\verb|^|x, x)
+\item multiset [x rem 5 for x in primes(2,1000)]
+\item series(sin(a*x),x=0)
+\item matrix [ [x\verb|^|i + y\verb|^|j for i in 1..3] for j in 1..3]
+\item x := series 'x
+\item sin(1+x)
+\item continuedFraction(314159/100000)
+\item y := operator 'y; D(y z, z)
+\item D(y z, z, 2) + D(y z, z) + y z = 0
+\item prefix(of1, [of2 for i in 1..5])
+\item infix(of3,[of2 for i in 1..4])
+\item infix(of3, of1, of2)
+\item postfix(of3, of1)
+\item box(prefix(of1, [of2 for i in 1..5]))
+\item label(prefix(of1, [of2 for i in 1..5]), of2)
+\item (matrix\$OutputForm)([[of1, of2], [of2, of1]])
+\end{enumerate}
+These tests still fail or give false positives:
+\begin{enumerate}
+\tt
+\item zag(zag(of1, of2),zag(of1, of2))
+\item root(of1)
+\item root(of1, of2)
+\item over(of1, of2)
+\item slash(of1, of2)
+\item assign(of1, of2)
+\item rarrow(of1, of2)
+\item differentiate(of1, 15)
+\item binomial(of1, of2)
+\item tensor(of1,of2)
+\item sub(of1, of2)
+\item super(of1, of2)
+\item presub(of1, of2)
+\item presuper(of1, of2)
+\item scripts(of1, [of2, of3, of2, of3])
+\item scripts(of1, [of2, empty()\$OutputForm, of3, empty()\$OutputForm])
+\item quote(of1)
+\item dot(of1)
+\item dot(of1,3)
+\item dot(of1,4)
+\item prime(of1)
+\item prime(of1, 5)
+\item overbar(of1)
+\item overlabel(of2, of1)
+\item sum(of1)
+\item sum(of1, of2)
+\item sum(of1,of2,of3)
+\item prod(of1)
+\item prod(of1, of2)
+\item prod(of1,of2,of3)
+\item int(of1)
+\item int(of1, of2)
+\item int(of1, of2, of3)
+\item brace(of1)
+\item brace([of1 for i in 1..4])
+\item bracket(of1)
+\item bracket([of1 for i in 1..4])
+\item paren(of1)
+\item paren([of1 for i in 1..4])
+\item semicolonSeparate([of1 for i in 1..4])
+\item of1 < of2
+\item exquo(of1, of2)
+\item SEGMENT(of1,of2)
+\item SEGMENT(of1)
+\end{enumerate}
+The \spadtype{TexmacsFormat} domain has the capability to format an object with
 subscripts, superscripts, presubscripts and presuperscripts however
 I don't know of any Axiom command that produces such an object. In
 fact at present I see the case of "SUPERSUB" being used for putting
@@ -69,14 +107,14 @@ derivatives.
 
 <<public declarations>>=
 )abbrev domain TMFORM TexmacsFormat
-++ Author: Arthur C. Ralfs
-++ Date: January 2007
-++ This package is based on the TeXFormat domain by Robert S. Sutor
+++ Author: Alexander D. Solovets
+++ Date: October 2010
+++ This package is based on the MathMLFormat domain by Arthur C. Ralfs
 ++ without which I wouldn't have known where to start.
 ++ Basic Operations: coerce, coerceS, coerceL, exprex, display
 ++ Description:
-++    \spadtype{MathMLFormat} provides a coercion from \spadtype{OutputForm}
-++    to MathML format.
+++    \spadtype{TexmacsFormat} provides a coercion from \spadtype{OutputForm}
+++    to TeXmacs format.
 
 TexmacsFormat(): public == private where
   E      ==> OutputForm
@@ -1145,7 +1183,7 @@ have to be switched by swapping names.
       formatFunction(op,args,prec)
 
 @
-\section{Mathematical Markup Language Form}
+\section{TeXmacs language form}
 <<package TMFORM TexmacsFormat>>=
 <<public declarations>>
 <<private constant declarations>>
@@ -1193,7 +1231,4 @@ have to be switched by swapping names.
 <<package TMFORM TexmacsFormat>>
 @
 \eject
-\begin{thebibliography}{99}
-\bibitem{1} nothing
-\end{thebibliography}
 \end{document}
