@@ -279,10 +279,10 @@ These are the local functions:
 @
 \subsection{Public Function Definitions}
 
-Note that I use the function sayTeX$Lisp much as I would printf in a
+Note that I use the function sayTexmacs$Lisp much as I would printf in a
 C program.  I've noticed in grepping the code that there are other "say"
 functions, sayBrightly and sayMessage for instance, but I have no idea
-what the difference is between them at this point.  sayTeX$Lisp does the
+what the difference is between them at this point.  sayTexmacs$Lisp does the
 job so for the time being I'll use that until I learn more.
 
 The functions coerceS and coerceL should probably be changed to display
@@ -298,22 +298,22 @@ returning Void.  I really only need the one coerce function.
 
     coerceS(expr : E): S ==
       s : S := postcondition formatMml(precondition expr, minPrec)
-      sayTeX$Lisp "scheme: (with _"mode_" _"math_""
+      sayTexmacs$Lisp "scheme: (with _"mode_" _"math_""
       displayElt(s)
-      sayTeX$Lisp ")"
+      sayTexmacs$Lisp ")"
       s
 
     coerceL(expr : E): S ==
       s : S := postcondition formatMml(precondition expr, minPrec)
-      sayTeX$Lisp "scheme: (with _"mode_" _"math_""
-      sayTeX$Lisp s
-      sayTeX$Lisp ")"
+      sayTexmacs$Lisp "scheme: (with _"mode_" _"math_""
+      sayTexmacs$Lisp s
+      sayTexmacs$Lisp ")"
       s
 
     display(texmacs : S): Void ==
-      sayTeX$Lisp "scheme: (with _"mode_" _"math_""
-      sayTeX$Lisp texmacs
-      sayTeX$Lisp ")"
+      sayTexmacs$Lisp "scheme: (with _"mode_" _"math_""
+      sayTexmacs$Lisp texmacs
+      sayTexmacs$Lisp ")"
       void()$Void
 
 
@@ -324,7 +324,7 @@ returning Void.  I really only need the one coerce function.
       -- the expressions.
       a : E
       expr := precondition expr
---      sayTeX$Lisp "0: "stringify expr
+--      sayTexmacs$Lisp "0: "stringify expr
       (ATOM(expr)$Lisp@Boolean) or (stringify expr = "NOTHING") =>
         concat ["{",stringify expr,"}"]
       le : L E := (expr pretend L E)
@@ -332,11 +332,11 @@ returning Void.  I really only need the one coerce function.
       sop : S := exprex op
       args : L E := rest le
       nargs : I := #args
---      sayTeX$Lisp concat ["1: ",stringify first le," : ",string(nargs)$S]
+--      sayTexmacs$Lisp concat ["1: ",stringify first le," : ",string(nargs)$S]
       s : S := concat ["{",sop]
       if nargs > 0  then
         for a in args repeat
---        sayTeX$Lisp concat ["2: ",stringify a]
+--        sayTexmacs$Lisp concat ["2: ",stringify a]
           s1 : S := exprex a
           s := concat [s,s1]
       s := concat [s,"}"]
@@ -359,35 +359,35 @@ returning Void.  I really only need the one coerce function.
     displayElt(mathML:S): Void ==
       -- Takes a string of syntactically complete mathML
       -- and formats it for display.
---      sayTeX$Lisp "****displayElt1****"
---      sayTeX$Lisp mathML
+--      sayTexmacs$Lisp "****displayElt1****"
+--      sayTexmacs$Lisp mathML
       enT:I -- marks end of tag, e.g. "<name>"
       enE:I -- marks end of element, e.g. "<name> ... </name>"
       end:I -- marks end of mathML string
       u:US
       end := #mathML
       length:I := 60
---      sayTeX$Lisp "****displayElt1.1****"
+--      sayTexmacs$Lisp "****displayElt1.1****"
       name:S := eltName(1,mathML)
---      sayTeX$Lisp name
---      sayTeX$Lisp concat("****displayElt1.2****",name)
+--      sayTexmacs$Lisp name
+--      sayTexmacs$Lisp concat("****displayElt1.2****",name)
       enE := eltLimit(name,2+#name,mathML)
---      sayTeX$Lisp "****displayElt2****"
+--      sayTexmacs$Lisp "****displayElt2****"
       if enE < length then
---        sayTeX$Lisp "****displayElt3****"
+--        sayTexmacs$Lisp "****displayElt3****"
         u := segment(1,enE)$US
-        sayTeX$Lisp mathML.u
+        sayTexmacs$Lisp mathML.u
       else
---        sayTeX$Lisp "****displayElt4****"
+--        sayTexmacs$Lisp "****displayElt4****"
         enT := tagEnd(name,1,mathML)
         u := segment(1,enT)$US
-        sayTeX$Lisp mathML.u
+        sayTexmacs$Lisp mathML.u
         u := segment(enT+1,enE-#name-3)$US
         displayElt(mathML.u)
         u := segment(enE-#name-2,enE)$US
-        sayTeX$Lisp mathML.u
+        sayTexmacs$Lisp mathML.u
       if end > enE then
---        sayTeX$Lisp "****displayElt5****"
+--        sayTexmacs$Lisp "****displayElt5****"
         u := segment(enE+1,end)$US
         displayElt(mathML.u)
 
@@ -397,7 +397,7 @@ returning Void.  I really only need the one coerce function.
       -- Assuming pos is the position of "<" for a start tag of a mathML
       -- element finds and returns the element's name.
       i:I := pos+1
-      --sayTeX$Lisp "eltName:mathmML string: "mathML
+      --sayTexmacs$Lisp "eltName:mathmML string: "mathML
       while member?(mathML.i,lowerCase()$CharacterClass)$CharacterClass repeat
          i := i+1
       u:US := segment(pos+1,i-1)
@@ -414,7 +414,7 @@ returning Void.  I really only need the one coerce function.
       startS:S := concat ["<",name]
       endS:S := concat ["</",name,">"]
       level:I := 1
-      --sayTeX$Lisp "eltLimit: element name: "name
+      --sayTexmacs$Lisp "eltLimit: element name: "name
       while (level > 0) repeat
         startI := position(startS,mathML,pI)$String
 
@@ -422,7 +422,7 @@ returning Void.  I really only need the one coerce function.
 
         if (startI = 0) then
           level := level-1
-          --sayTeX$Lisp "****eltLimit 1******"
+          --sayTexmacs$Lisp "****eltLimit 1******"
           pI := tagEnd(name,endI,mathML)
         else
           if (startI < endI) then
@@ -441,7 +441,7 @@ returning Void.  I really only need the one coerce function.
       while  (mathML.pI ~= char ">") repeat
         pI := pI+1
       u:US := segment(pos,pI)$US
-      --sayTeX$Lisp "tagEnd: "mathML.u
+      --sayTexmacs$Lisp "tagEnd: "mathML.u
       pI
 
 @
@@ -659,7 +659,7 @@ have to be switched by swapping names.
       -- for y(x,z) numLS = ["1","1","2","1"]
       posLS : L S := nil
       i := 0
- --     sayTeX$Lisp "formatSub: nargs = "string(#args)
+ --     sayTexmacs$Lisp "formatSub: nargs = "string(#args)
       while i < #args repeat
         posLS := append(posLS,list(string(i+1)))
         i := i+1
@@ -733,7 +733,7 @@ have to be switched by swapping names.
       -- for y(x,z) numLS = ["1","1","2","1"]
       posLS : L S := nil
       i := 0
- --     sayTeX$Lisp "formatSub: nargs = "string(#args)
+ --     sayTexmacs$Lisp "formatSub: nargs = "string(#args)
       while i < #args repeat
         posLS := append(posLS,list(string(i+1)))
         i := i+1
