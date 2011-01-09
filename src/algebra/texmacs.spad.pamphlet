@@ -5,8 +5,8 @@
 \author{Alexander D. Solovets}
 \maketitle
 \begin{abstract}
-TexmacsFormat is a package to produce presentation mathematical
-markup language from OutputForm.
+TexmacsFormat is a package to produce output as the
+special scheme code for TeXmacs.
 \end{abstract}
 \eject
 \tableofcontents
