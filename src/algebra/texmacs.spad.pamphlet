@@ -244,7 +244,7 @@ These are the local functions:
 
     formatUnary:(S,  E, I) -$>$ S
 
-    formatMml:(E,I) -$>$ S
+    formatTexmacs:(E,I) -$>$ S
 
     newWithNum:I -$>$ \$
       this is a relic from tex.spad and is not used here so far.  I'll
@@ -304,7 +304,7 @@ These are the local functions:
     formatSuperSub1: (E, L E, I) -> S
     formatTensor:   (E, L E, I) -> S
     formatUnary:    (S,  E, I) -> S
-    formatMml:      (E,I) -> S
+    formatTexmacs:      (E,I) -> S
     formatZag:      L E -> S
     formatZag1:     L E -> S
     newWithNum:     I -> %
@@ -333,18 +333,18 @@ returning Void.  I really only need the one coerce function.
     -- public function definitions
 
     coerce(expr : E): S ==
-      s : S := postcondition formatMml(precondition expr, minPrec)
+      s : S := postcondition formatTexmacs(precondition expr, minPrec)
       s
 
     coerceS(expr : E): S ==
-      s : S := postcondition formatMml(precondition expr, minPrec)
+      s : S := postcondition formatTexmacs(precondition expr, minPrec)
       sayTexmacs$Lisp "scheme: (with _"mode_" _"math_""
       displayElt(s)
       sayTexmacs$Lisp ")"
       s
 
     coerceL(expr : E): S ==
-      s : S := postcondition formatMml(precondition expr, minPrec)
+      s : S := postcondition formatTexmacs(precondition expr, minPrec)
       sayTexmacs$Lisp "scheme: (with _"mode_" _"math_""
       sayTexmacs$Lisp s
       sayTexmacs$Lisp ")"
@@ -501,7 +501,7 @@ The INTSIGN case already allows for both definite and indefinite
 integrals.
 
 In the function formatSpecial various cases are handled including
-SUB and SUPERSUB.  These cases are now caught in formatMml and so
+SUB and SUPERSUB.  These cases are now caught in formatTexmacs and so
 the code in formatSpecial doesn't get executed.  The only cases
 I know of using these are partial derivatives for SUB and ordinary
 derivatives or SUPERSUB however in TexFormat the capability is there
@@ -591,16 +591,16 @@ have to be switched by swapping names.
       op = "AGGSET" =>
         formatNary(";",args,prec)
       op = "TAG" =>
-        group concat [formatMml(first args,prec),
+        group concat [formatTexmacs(first args,prec),
                       "<mo>&#x02192;</mo>",
-                        formatMml(second args,prec)]
+                        formatTexmacs(second args,prec)]
                          --RightArrow
       op = "SLASH" =>
-        group concat [formatMml(first args, prec),
-                      "<mo>/</mo>", formatMml(second args,prec)]
+        group concat [formatTexmacs(first args, prec),
+                      "<mo>/</mo>", formatTexmacs(second args,prec)]
       op = "VCONCAT" =>
         group concat("<mtable><mtr>",
-                     concat(concat([concat("<mtd>",concat(formatMml(u, minPrec),"</mtd>"))
+                     concat(concat([concat("<mtd>",concat(formatTexmacs(u, minPrec),"</mtd>"))
                                     for u in args]::L S),
                             "</mtr></mtable>"))
       op = "CONCATB" =>
@@ -608,48 +608,48 @@ have to be switched by swapping names.
       op = "CONCAT" =>
         formatNary("",args,minPrec)
       op = "QUOTE" =>
-        group concat("<mo>'</mo>",formatMml(first args, minPrec))
+        group concat("<mo>'</mo>",formatTexmacs(first args, minPrec))
       op = "BRACKET" =>
-        group addBrackets ungroup formatMml(first args, minPrec)
+        group addBrackets ungroup formatTexmacs(first args, minPrec)
       op = "BRACE" =>
-        group addBraces ungroup formatMml(first args, minPrec)
+        group addBraces ungroup formatTexmacs(first args, minPrec)
       op = "PAREN" =>
-        group parenthesize ungroup formatMml(first args, minPrec)
+        group parenthesize ungroup formatTexmacs(first args, minPrec)
       op = "OVERBAR" =>
         null args => ""
-        group concat ["<mover accent='true'><mrow>",formatMml(first args,minPrec),"</mrow><mo stretchy='true'>&#x000AF;</mo></mover>"]
+        group concat ["<mover accent='true'><mrow>",formatTexmacs(first args,minPrec),"</mrow><mo stretchy='true'>&#x000AF;</mo></mover>"]
          --OverBar
       op = "ROOT" =>
         null args => ""
-        tmp : S := formatMml(first args, minPrec)
+        tmp : S := formatTexmacs(first args, minPrec)
         null rest args => concat ["(sqrt ",tmp,")"]
         concat
-          ["(sqrt ",tmp," ",formatMml(first rest args, minPrec),")"]
+          ["(sqrt ",tmp," ",formatTexmacs(first rest args, minPrec),")"]
       op = "SEGMENT" =>
-        tmp : S := concat [formatMml(first args, minPrec),"_"<ldots>_""]
+        tmp : S := concat [formatTexmacs(first args, minPrec),"_"<ldots>_""]
         group
           null rest args =>  tmp
-          concat [tmp,formatMml(first rest args, minPrec)]
-      -- SUB should now be diverted in formatMml although I'll leave
+          concat [tmp,formatTexmacs(first rest args, minPrec)]
+      -- SUB should now be diverted in formatTexmacs although I'll leave
       -- the code here for now.
       op = "SUB" =>
-        group concat ["<msub>",formatMml(first args, minPrec),
+        group concat ["<msub>",formatTexmacs(first args, minPrec),
           formatSpecial("AGGLST",rest args,minPrec),"</msub>"]
-      -- SUPERSUB should now be diverted in formatMml although I'll leave
+      -- SUPERSUB should now be diverted in formatTexmacs although I'll leave
       -- the code here for now.
       op = "SUPERSUB" =>
-        base:S := formatMml(first args, minPrec)
+        base:S := formatTexmacs(first args, minPrec)
         args := rest args
         if #args = 1 then
-          "<msub><mrow>"base"</mrow><mrow>"formatMml(first args, minPrec)"</mrow></msub>"
+          "<msub><mrow>"base"</mrow><mrow>"formatTexmacs(first args, minPrec)"</mrow></msub>"
         else if #args = 2 then
         -- it would be nice to substitue &#x2032; for , in the case of
         -- an ordinary derivative, it looks a lot better.
-          "<msubsup><mrow>"base"</mrow><mrow>"formatMml(first args,minPrec)"</mrow><mrow>"formatMml(first rest args, minPrec)"</mrow></msubsup>"
+          "<msubsup><mrow>"base"</mrow><mrow>"formatTexmacs(first args,minPrec)"</mrow><mrow>"formatTexmacs(first rest args, minPrec)"</mrow></msubsup>"
         else if #args = 3 then
-          "<mmultiscripts><mrow>"base"</mrow><mrow>"formatMml(first args,minPrec)"</mrow><mrow>"formatMml(first rest args,minPrec)"</mrow><mprescripts/><mrow>"formatMml(first rest rest args,minPrec)"</mrow><none/></mmultiscripts>"
+          "<mmultiscripts><mrow>"base"</mrow><mrow>"formatTexmacs(first args,minPrec)"</mrow><mrow>"formatTexmacs(first rest args,minPrec)"</mrow><mprescripts/><mrow>"formatTexmacs(first rest rest args,minPrec)"</mrow><none/></mmultiscripts>"
         else if #args = 4 then
-          "<mmultiscripts><mrow>"base"</mrow><mrow>"formatMml(first args,minPrec)"</mrow><mrow>"formatMml(first rest args,minPrec)"</mrow><mprescripts/><mrow>"formatMml(first rest rest args,minPrec)"</mrow><mrow>"formatMml(first rest rest rest args,minPrec)"</mrow></mmultiscripts>"
+          "<mmultiscripts><mrow>"base"</mrow><mrow>"formatTexmacs(first args,minPrec)"</mrow><mrow>"formatTexmacs(first rest args,minPrec)"</mrow><mprescripts/><mrow>"formatTexmacs(first rest rest args,minPrec)"</mrow><mrow>"formatTexmacs(first rest rest rest args,minPrec)"</mrow></mmultiscripts>"
         else
           "<mtext>Problem with multiscript object</mtext>"
       op = "SC" =>
@@ -663,11 +663,11 @@ have to be switched by swapping names.
 	tmp := formatNaryNoGroup("",args,minPrec)
 	group concat ["<mtable frame=_"solid_"><mtr><mtd>",tmp,"</mtd></mtr></mtable>"]
       op = "EQUATNUM" =>
-        concat ["<mtable><mtr><mtd>",formatMml(args.1,minPrec),"</mtd><mtd style=_"padding-left: 50px;_">",formatMml(args.2,minPrec),"</mtd></mtr></mtable>"]
+        concat ["<mtable><mtr><mtd>",formatTexmacs(args.1,minPrec),"</mtd><mtd style=_"padding-left: 50px;_">",formatTexmacs(args.2,minPrec),"</mtd></mtr></mtable>"]
       op = "BINOMIAL" =>
         -- binomial('f:OutputForm,'z:OutputForm) produces
 	-- {{BINOMIAL}{f}{z}}
-	concat ["<mrow><mo stretchy=_"true_">(</mo><mfrac linethickness=_"0_">",formatMml(args.1,minPrec),formatMml(args.2,minPrec),"</mfrac><mo>)</mo></mrow>"]
+	concat ["<mrow><mo stretchy=_"true_">(</mo><mfrac linethickness=_"0_">",formatTexmacs(args.1,minPrec),formatTexmacs(args.2,minPrec),"</mfrac><mo>)</mo></mrow>"]
       op = "NOTHING" =>
         "<none/>"
       op = "ZAG" =>
@@ -675,12 +675,12 @@ have to be switched by swapping names.
         -- {{+}{3}{{ZAG}{1}{7}}{{ZAG}{1}{15}}{{ZAG}{1}{1}}{{ZAG}{1}{25}}{{ZAG}{1}{1}}{{ZAG}{1}{7}}{{ZAG}{1}{4}}}
         -- to format continued fraction traditionally need to intercept it at the
         -- formatNary of the "+"
-        --  concat [" \zag{",formatMml(first args, minPrec),"}{",
-        --    formatMml(first rest args,minPrec),"}"]
+        --  concat [" \zag{",formatTexmacs(first args, minPrec),"}{",
+        --    formatTexmacs(first rest args,minPrec),"}"]
 	concat ["<mtable><mtr><mtd style=_"border-right: solid 1px black;
-	  border-bottom: solid 1px black; padding-right: 2px; padding-left: 2px;_">",formatMml(first args, minPrec),
+	  border-bottom: solid 1px black; padding-right: 2px; padding-left: 2px;_">",formatTexmacs(first args, minPrec),
 	    "</mtd></mtr><mtr><mtd style=_"border-left: solid 1px black; padding-left: 2px; padding-right: 2px;_">",
-              formatMml(first rest args,minPrec),"</mtd></mtr></mtable>"]
+              formatTexmacs(first rest args,minPrec),"</mtd></mtr></mtable>"]
       concat ["<mtext>not done yet for: ",op,"</mtext>"]
 
     formatSub(expr : E, args : L E, opPrec : I) : S ==
@@ -766,11 +766,11 @@ have to be switched by swapping names.
       -- here expr is everything in the first set of braces and
       -- args is {{x}{z}}
       position("CONCAT",stringify expr,1) = 0 =>
-        tmp : S := formatMml(first args, 0)
+        tmp : S := formatTexmacs(first args, 0)
         s : S := concat ["<msub>" tmp "<mrow>"]
         args := rest args
         while not(null(args)) repeat
-          tmp := formatMml(first args, 0)
+          tmp := formatTexmacs(first args, 0)
           s := concat [s tmp]
           if #args > 1 then s:= concat [s "<mo>,</mo>"]
           args := rest args
@@ -816,7 +816,7 @@ have to be switched by swapping names.
       i := 1
       while i < #posLS+1 repeat
 --        tmpS := stringify args.i
-        tmpS := formatMml(first args,minPrec)
+        tmpS := formatTexmacs(first args,minPrec)
         args := rest args
         s := s"<mi>"tmpS"</mi>"
         if i < #posLS then s := s"<mo>,</mo>"
@@ -844,28 +844,28 @@ have to be switched by swapping names.
             --{{SUPERSUB}{F}{1}{2}{3}{4}}  puts 1 in subscript position and then
             --adds scripts counter clockwise.  Some of the scripts can be empty.
             tmp : L S := [""," "]$(L S)
-            tmp1 : S := formatMml(args.1,minPrec)
-            if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
-            if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
-            if member?((tmp4 : S := formatMml(args.4,minPrec)),tmp) then tmp4 := "<none/>"
-            if member?((tmp5 : S := formatMml(args.5,minPrec)),tmp) then tmp5 := "<none/>"
+            tmp1 : S := formatTexmacs(args.1,minPrec)
+            if member?((tmp2 : S := formatTexmacs(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+            if member?((tmp3 : S := formatTexmacs(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+            if member?((tmp4 : S := formatTexmacs(args.4,minPrec)),tmp) then tmp4 := "<none/>"
+            if member?((tmp5 : S := formatTexmacs(args.5,minPrec)),tmp) then tmp5 := "<none/>"
             "<mmultiscripts>" tmp1 tmp2 tmp3 "<mprescripts/>" tmp5 tmp4 "</mmultiscripts>"
 	  else if #args = 4 then
 	    -- presuper(of1,of2) produces
 	    -- {{SUPERSUB}{f}{ }{ }{z}}
             tmp : L S := [""," "]$(L S)
-            tmp1 : S := formatMml(args.1,minPrec)
-            if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
-            if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
-            if member?((tmp4 : S := formatMml(args.4,minPrec)),tmp) then tmp4 := "<none/>"
+            tmp1 : S := formatTexmacs(args.1,minPrec)
+            if member?((tmp2 : S := formatTexmacs(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+            if member?((tmp3 : S := formatTexmacs(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+            if member?((tmp4 : S := formatTexmacs(args.4,minPrec)),tmp) then tmp4 := "<none/>"
             "<mmultiscripts>" tmp1 tmp2 tmp3 "<mprescripts/><none/>" tmp4 "</mmultiscripts>"
 	  else if #args = 3 then
 	    -- super(of1,of2) produces
 	    -- {{SUPERSUB}{f}{ }{z}}
             tmp : L S := [""," "]$(L S)
-            tmp1 : S := formatMml(args.1,minPrec)
-            if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
-            if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+            tmp1 : S := formatTexmacs(args.1,minPrec)
+            if member?((tmp2 : S := formatTexmacs(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+            if member?((tmp3 : S := formatTexmacs(args.3,minPrec)),tmp) then tmp3 := "<none/>"
             "<mmultiscripts>" tmp1 tmp2 tmp3 "</mmultiscripts>"
 	  else
 	    "<mtext>Problem with number of args in SUPERSUB</mtext>"
@@ -892,7 +892,7 @@ have to be switched by swapping names.
       while j < i repeat
         s := s"'"
         j := j + 1
-      s := s"_") _"(_" "formatMml(first args,minPrec)" _")_")"
+      s := s"_") _"(_" "formatTexmacs(first args,minPrec)" _")_")"
 
     formatSuperSub1(expr : E, args : L E, opPrec : I) : S ==
       -- This one produces ordinary derivatives with differential notation,
@@ -916,13 +916,13 @@ have to be switched by swapping names.
       while position(commaTest,commaS,1) > 0 repeat
         ndiffs := ndiffs+1
         commaTest := commaTest","
-      s : S := "<mfrac><mrow><msup><mo>&#x02146;</mo><mn>"string(ndiffs)"</mn></msup><mi>"funcS"</mi></mrow><mrow><mo>&#x02146;</mo><msup><mi>"formatMml(first args,minPrec)"</mi><mn>"string(ndiffs)"</mn></msup></mrow></mfrac><mo>&#x02061;</mo><mo>(</mo><mi>"formatMml(first args,minPrec)"</mi><mo>)</mo>"
+      s : S := "<mfrac><mrow><msup><mo>&#x02146;</mo><mn>"string(ndiffs)"</mn></msup><mi>"funcS"</mi></mrow><mrow><mo>&#x02146;</mo><msup><mi>"formatTexmacs(first args,minPrec)"</mi><mn>"string(ndiffs)"</mn></msup></mrow></mfrac><mo>&#x02061;</mo><mo>(</mo><mi>"formatTexmacs(first args,minPrec)"</mi><mo>)</mo>"
 
     formatTensor(expr : E, args : L E, opPrec : I) : S ==
-      s : S := formatMml(first args,minPrec)
+      s : S := formatTexmacs(first args,minPrec)
       args := rest args
       while #args > 0 repeat
-        s := s "<mo>&#x02297;</mo>" formatMml(first args,minPrec)
+        s := s "<mo>&#x02297;</mo>" formatTexmacs(first args,minPrec)
         args := rest args
       s
 
@@ -939,13 +939,13 @@ have to be switched by swapping names.
 	  if #args = 2 then
 	    -- sum(a::OutputForm,b::OutputForm) produces
 	    -- {{SIGMA}{b}{a}}
-	    concat ["<munderover><mo>&Sum;</mo><mrow>",formatMml(args.1,minPrec),"</mrow><none/></munderover>",formatMml(args.2,minPrec)]
+	    concat ["<munderover><mo>&Sum;</mo><mrow>",formatTexmacs(args.1,minPrec),"</mrow><none/></munderover>",formatTexmacs(args.2,minPrec)]
 	  else "<mtext>Problem in formatPlex SIGMA</mtext>"
       op = "SIGMA2" =>
 	  if #args = 3 then
 	    -- sum(a::OutputForm,b::OutputForm,c::OutputForm) produces
 	    -- {{SIGMA2}{b}{c}{a}}
-	    concat ["<munderover><mo>&Sum;</mo><mrow>",formatMml(args.1,minPrec),"</mrow>",formatMml(args.2,minPrec),"</munderover>",formatMml(args.3,minPrec)]
+	    concat ["<munderover><mo>&Sum;</mo><mrow>",formatTexmacs(args.1,minPrec),"</mrow>",formatTexmacs(args.2,minPrec),"</munderover>",formatTexmacs(args.3,minPrec)]
           else "<mtext>Problem in formatPlex SIGMA2</mtext>"
       --  checkarg := true
       --  "<mo>&#x02211;</mo>"
@@ -954,13 +954,13 @@ have to be switched by swapping names.
 	  if #args = 2 then
 	    -- prod(a::OutputForm,b::OutputForm) produces
 	    -- {{PI}{b}{a}}
-	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatMml(args.1,minPrec),"</mrow><none/></munderover>",formatMml(args.2,minPrec)]
+	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatTexmacs(args.1,minPrec),"</mrow><none/></munderover>",formatTexmacs(args.2,minPrec)]
 	  else "<mtext>Problem in formatPlex SIGMA</mtext>"
       op = "PI2" =>
 	  if #args = 3 then
 	    -- prod(a::OutputForm,b::OutputForm,c::OutputForm) produces
 	    -- {{PI2}{b}{c}{a}}
-	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatMml(args.1,minPrec),"</mrow>",formatMml(args.2,minPrec),"</munderover>",formatMml(args.3,minPrec)]
+	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatTexmacs(args.1,minPrec),"</mrow>",formatTexmacs(args.2,minPrec),"</munderover>",formatTexmacs(args.3,minPrec)]
           else "<mtext>Problem in formatPlex SIGMA2</mtext>"
       op = "INTSIGN" =>
           -- int(a::OutputForm) produces
@@ -970,13 +970,13 @@ have to be switched by swapping names.
 	  -- int(a::OutputForm,b::OutputForm,c::OutputForm) produces
 	  -- {{INTSIGN}{b}{c}{a}}
 	  if #args = 3 then
-	    concat ["<munderover><mo>&int;</mo><mrow>",formatMml(args.1,minPrec),"</mrow><mrow>",formatMml(args.2,minPrec),"</mrow></munderover>",formatMml(args.3,minPrec)]
+	    concat ["<munderover><mo>&int;</mo><mrow>",formatTexmacs(args.1,minPrec),"</mrow><mrow>",formatTexmacs(args.2,minPrec),"</mrow></munderover>",formatTexmacs(args.3,minPrec)]
           else "<mtext>Problem in formatPlex SIGMA2</mtext>"
       s : S :=
         op = "INDEFINTEGRAL" => "<mo>&#x0222B;</mo>"
         -- Integral, int
         "????"
-      hold := formatMml(first args,minPrec)
+      hold := formatTexmacs(first args,minPrec)
       args := rest args
       if op ~= "INDEFINTEGRAL" then
         if hold ~= "" then
@@ -984,7 +984,7 @@ have to be switched by swapping names.
         else
           s := concat ["<munderover>",s,group " "]
         if not null rest args then
-          hold := formatMml(first args,minPrec)
+          hold := formatTexmacs(first args,minPrec)
           if hold ~= "" then
             s := concat [s,group hold,"</munderover>"]
           else
@@ -996,11 +996,11 @@ have to be switched by swapping names.
           la : L E := (first args pretend L E)
           opa : S := stringify first la
           if opa = "+" then
-            s := concat [s,"<mo>(</mo>",formatMml(first args,minPrec),"<mo>)</mo>"]
-          else s := concat [s,formatMml(first args,minPrec)]
-        else s := concat [s,formatMml(first args,minPrec)]
+            s := concat [s,"<mo>(</mo>",formatTexmacs(first args,minPrec),"<mo>)</mo>"]
+          else s := concat [s,formatTexmacs(first args,minPrec)]
+        else s := concat [s,formatTexmacs(first args,minPrec)]
       else
-        hold := group concat [hold,formatMml(first args,minPrec)]
+        hold := group concat [hold,formatTexmacs(first args,minPrec)]
         s := concat [s,hold]
 --      if opPrec < prec then s := parenthesize s
 -- getting ugly parentheses on fractions
@@ -1025,7 +1025,7 @@ have to be switched by swapping names.
         -- pick out the bound variable used by axiom
         varRS : S := stringify last(atomE)
         tmpLE : L E := ((first rest rest args) pretend L E)
-        integrand : S := formatMml(first rest tmpLE,minPrec)
+        integrand : S := formatTexmacs(first rest tmpLE,minPrec)
         -- replace the bound variable, i.e. axiom uses someting of the form
         -- %A for the bound variable and puts the original variable used
         -- in the input command as a superscript on the integral sign.
@@ -1041,7 +1041,7 @@ have to be switched by swapping names.
       bvar : E := last atomize(first rest rest args)
       bvarS : S := stringify bvar
       tmpLE : L E := ((first rest rest args) pretend L E)
-      integrand : S := formatMml(first rest tmpLE,minPrec)
+      integrand : S := formatTexmacs(first rest tmpLE,minPrec)
       concat ["<mrow><munderover><mo>&#x0222B;</mo><mi>" lowlim "</mi><mi>" highlim "</mi></munderover>" integrand "<mo>&#x02146;</mo><mi>" bvarS "</mi></mrow>"]
 
 
@@ -1063,7 +1063,7 @@ have to be switched by swapping names.
       p : I := position(op,unaryOps)
       p < 1 => error "unknown unary op"
       opPrec := unaryPrecs.p
-      s : S := concat ["(concat _"",op,"_" ",formatMml(arg,opPrec), ")"]
+      s : S := concat ["(concat _"",op,"_" ",formatTexmacs(arg,opPrec), ")"]
       opPrec < prec => group parenthesize s
       op = "-" => s
       group s
@@ -1079,10 +1079,10 @@ have to be switched by swapping names.
         la : L E := (first args pretend L E)
         opa : S := stringify first la
       if (opa = "SIGMA" or opa = "SIGMA2" or opa = "PI" or opa = "PI2") and op = "^" then
-        s1 : S := concat ["<mo>(</mo>",formatMml(first args, opPrec),"<mo>)</mo>"]
+        s1 : S := concat ["<mo>(</mo>",formatTexmacs(first args, opPrec),"<mo>)</mo>"]
       else
-        s1 : S := formatMml(first args, opPrec)
-      s2 : S := formatMml(first rest args, opPrec)
+        s1 : S := formatTexmacs(first args, opPrec)
+      s2 : S := formatTexmacs(first rest args, opPrec)
       op :=
         op = "|"     =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
         op = "^"    =>  s := concat ["(concat " s1 "(rsup " s2 "))"]
@@ -1136,7 +1136,7 @@ have to be switched by swapping names.
            tmpS : S := stringify first args
            position("ZAG",tmpS,1) > 0 => formatZag(args)
 --         position("ZAG",tmpS,1) > 0 => formatZag1(args)
-           concat [formatMml(first args,minPrec) " _"+_" " formatZag(rest args)]
+           concat [formatTexmacs(first args,minPrec) " _"+_" " formatZag(rest args)]
       -- At least for the ops "*","+","-" we need to test to see if a sigma or pi
       -- is one of their arguments because we might need parentheses as indicated
       -- by the problem with summation(operator(f)(i),i=1..n)+1 versus
@@ -1174,10 +1174,10 @@ have to be switched by swapping names.
               la : L E := (a pretend L E)
               opa : S := stringify first la
             if opa = "SIGMA" or opa = "SIGMA2" or opa = "PI" or opa = "PI2" then
-              l := concat(op,concat(concat ["<mo>(</mo>",formatMml(a,opPrec),"<mo>)</mo>"],l)$L(S))$L(S)
-            else l := concat(op,concat(formatMml(a,opPrec),l)$L(S))$L(S)
-          else l := concat(op,concat(formatMml(a,opPrec),l)$L(S))$L(S)
-        else l := concat(op,concat(formatMml(a,opPrec),l)$L(S))$L(S)
+              l := concat(op,concat(concat ["<mo>(</mo>",formatTexmacs(a,opPrec),"<mo>)</mo>"],l)$L(S))$L(S)
+            else l := concat(op,concat(formatTexmacs(a,opPrec),l)$L(S))$L(S)
+          else l := concat(op,concat(formatTexmacs(a,opPrec),l)$L(S))$L(S)
+        else l := concat(op,concat(formatTexmacs(a,opPrec),l)$L(S))$L(S)
         count := count + 1
       s : S := concat reverse rest l
       opPrec < prec => parenthesize s
@@ -1189,11 +1189,11 @@ have to be switched by swapping names.
       -- expressions
       tmpZag : L E := first args pretend L E
       -- may want to test that tmpZag contains 'ZAG'
-      #args > 1 => "(frac "formatMml(first rest tmpZag,minPrec)"(concat "formatMml(first rest rest tmpZag,minPrec)" _"+_" "formatZag(rest args)"))"
+      #args > 1 => "(frac "formatTexmacs(first rest tmpZag,minPrec)"(concat "formatTexmacs(first rest rest tmpZag,minPrec)" _"+_" "formatZag(rest args)"))"
       (first args = "...":: E)@Boolean => "<mo>&#x2026;</mo>"
       op:S := stringify first args
       position("ZAG",op,1) > 0 =>
-        "(frac "formatMml(first rest tmpZag,minPrec)formatMml(first rest rest tmpZag,minPrec)")"
+        "(frac "formatTexmacs(first rest tmpZag,minPrec)formatTexmacs(first rest rest tmpZag,minPrec)")"
       error "formatZag: Last argument in ZAG construct has unknown operator: "op
 
     formatZag1(args : L E) : S ==
@@ -1201,11 +1201,11 @@ have to be switched by swapping names.
     -- use a table
     -- {{ZAG}{1}{7}}
       tmpZag : L E := first args pretend L E
-      #args > 1 => "(frac "formatMml(first rest tmpZag,minPrec)"(concat "formatMml(first rest rest tmpZag,minPrec)" _"+_" "formatZag(rest args)"))"
+      #args > 1 => "(frac "formatTexmacs(first rest tmpZag,minPrec)"(concat "formatTexmacs(first rest rest tmpZag,minPrec)" _"+_" "formatZag(rest args)"))"
       (first args = "...":: E)@Boolean => "<mo>&#x2026;</mo>"
       error "formatZag1: Unexpected kind of ZAG"
 
-    formatMml(expr : E,prec : I) ==
+    formatTexmacs(expr : E,prec : I) ==
       i,len : Integer
       intSplitLen : Integer := 20
       ATOM(expr)$Lisp@Boolean =>
@@ -1283,7 +1283,7 @@ have to be switched by swapping names.
       member?(op,naryNGOps) => formatNaryNoGroup(op,args, prec)
       member?(op,naryOps) => formatNary(op,args, prec)
 
-      op := formatMml(first l,minPrec)
+      op := formatTexmacs(first l,minPrec)
       formatFunction(op,args,prec)
 
 @
