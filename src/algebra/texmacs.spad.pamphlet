@@ -48,10 +48,6 @@ Here's a list of test cases that currently format correctly:
 \item box(prefix(of1, [of2 for i in 1..5]))
 \item label(prefix(of1, [of2 for i in 1..5]), of2)
 \item (matrix\$OutputForm)([[of1, of2], [of2, of1]])
-\end{enumerate}
-These tests still fail or give false positives:
-\begin{enumerate}
-\tt
 \item zag(zag(of1, of2),zag(of1, of2))
 \item root(of1)
 \item root(of1, of2)
