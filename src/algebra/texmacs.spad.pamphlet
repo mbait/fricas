@@ -134,7 +134,7 @@ TexmacsFormat(): public == private where
       ++ coerceS(o) changes o in the standard output format to Texmacs
       ++ format and displays result as one long string.
     exprex:    E -> S
-      ++ coverts \spadtype{OutputForm} to \spadtype{String} with the
+      ++ converts \spadtype{OutputForm} to \spadtype{String} with the
       ++ structure preserved with braces.  Actually this is not quite
       ++ accurate.  The function \spadfun{precondition} is first
       ++ applied to the
@@ -171,7 +171,7 @@ TexmacsFormat(): public == private where
 
     -- the precedence of / in the following is relatively low because
     -- the bar obviates the need for parentheses.
-    binaryOps     : L S := ["+->","|","^","/","<",">","=","OVER"]$(L S)
+    binaryOps     : L S := ["+->","|","^","/","<",">","=","OVER","RARROW","%LET"]$(L S)
     binaryPrecs   : L I := [0,0,900, 700,400,400,400,   700]$(L I)
 
     naryOps       : L S := ["-","+","*",blank,",",";"," ","ROW","",
@@ -186,7 +186,8 @@ TexmacsFormat(): public == private where
     specialOps    : L S := ["MATRIX","BRACKET","BRACE","CONCATB","VCONCAT",  _
                             "AGGLST","CONCAT","OVERBAR","ROOT","SUB","TAG", _
                             "SUPERSUB","ZAG","AGGSET","SC","PAREN", _
-                            "SEGMENT","QUOTE","theMap", "SLASH"]
+                            "SEGMENT","QUOTE","theMap", "SLASH","BOX","EQUATNUM", _
+							"BINOMIAL","NOTHING"]
 
     -- the next two lists provide translations for some strings for
     -- which MML provides special macros.
@@ -301,6 +302,7 @@ These are the local functions:
     formatSub:      (E, L E, I) -> S
     formatSuperSub: (E, L E, I) -> S
     formatSuperSub1: (E, L E, I) -> S
+    formatTensor:   (E, L E, I) -> S
     formatUnary:    (S,  E, I) -> S
     formatMml:      (E,I) -> S
     formatZag:      L E -> S
@@ -656,12 +658,29 @@ have to be switched by swapping names.
         tmp := formatNaryNoGroup("</mtd></mtr><mtr><mtd>", args, minPrec)
         group concat ["<mtable><mtr><mtd>",tmp,"</mtd></mtr></mtable>"]
       op = "MATRIX" => formatMatrix rest args
+      op = "BOX" =>
+        null args => ""
+	tmp := formatNaryNoGroup("",args,minPrec)
+	group concat ["<mtable frame=_"solid_"><mtr><mtd>",tmp,"</mtd></mtr></mtable>"]
+      op = "EQUATNUM" =>
+        concat ["<mtable><mtr><mtd>",formatMml(args.1,minPrec),"</mtd><mtd style=_"padding-left: 50px;_">",formatMml(args.2,minPrec),"</mtd></mtr></mtable>"]
+      op = "BINOMIAL" =>
+        -- binomial('f:OutputForm,'z:OutputForm) produces
+	-- {{BINOMIAL}{f}{z}}
+	concat ["<mrow><mo stretchy=_"true_">(</mo><mfrac linethickness=_"0_">",formatMml(args.1,minPrec),formatMml(args.2,minPrec),"</mfrac><mo>)</mo></mrow>"]
+      op = "NOTHING" =>
+        "<none/>"
       op = "ZAG" =>
--- {{+}{3}{{ZAG}{1}{7}}{{ZAG}{1}{15}}{{ZAG}{1}{1}}{{ZAG}{1}{25}}{{ZAG}{1}{1}}{{ZAG}{1}{7}}{{ZAG}{1}{4}}}
--- to format continued fraction traditionally need to intercept it at the
--- formatNary of the "+"
-        concat [" \zag{",formatMml(first args, minPrec),"}{",
-          formatMml(first rest args,minPrec),"}"]
+        -- this is the output from continuedFraction(314159/100000)
+        -- {{+}{3}{{ZAG}{1}{7}}{{ZAG}{1}{15}}{{ZAG}{1}{1}}{{ZAG}{1}{25}}{{ZAG}{1}{1}}{{ZAG}{1}{7}}{{ZAG}{1}{4}}}
+        -- to format continued fraction traditionally need to intercept it at the
+        -- formatNary of the "+"
+        --  concat [" \zag{",formatMml(first args, minPrec),"}{",
+        --    formatMml(first rest args,minPrec),"}"]
+	concat ["<mtable><mtr><mtd style=_"border-right: solid 1px black;
+	  border-bottom: solid 1px black; padding-right: 2px; padding-left: 2px;_">",formatMml(first args, minPrec),
+	    "</mtd></mtr><mtr><mtd style=_"border-left: solid 1px black; padding-left: 2px; padding-right: 2px;_">",
+              formatMml(first rest args,minPrec),"</mtd></mtr></mtable>"]
       concat ["<mtext>not done yet for: ",op,"</mtext>"]
 
     formatSub(expr : E, args : L E, opPrec : I) : S ==
@@ -746,6 +765,16 @@ have to be switched by swapping names.
       -- {{CONCAT}{,}{1}}}{{CONCAT}{,}{2}}}{{CONCAT}{,}{1}}}}{x}{z}},
       -- here expr is everything in the first set of braces and
       -- args is {{x}{z}}
+      position("CONCAT",stringify expr,1) = 0 =>
+        tmp : S := formatMml(first args, 0)
+        s : S := concat ["<msub>" tmp "<mrow>"]
+        args := rest args
+        while not(null(args)) repeat
+          tmp := formatMml(first args, 0)
+          s := concat [s tmp]
+          if #args > 1 then s:= concat [s "<mo>,</mo>"]
+          args := rest args
+        s := concat [s "</mrow></msub>"]
       atomE : L E := atomize(expr)
       op : S := stringify first atomE
       op ~= "SUB" => "<mtext>Mistake in formatSub: no SUB</mtext>"
@@ -797,10 +826,53 @@ have to be switched by swapping names.
     formatSuperSub(expr : E, args : L E, opPrec : I) : S ==
       -- this produces prime notation ordinary derivatives.
       -- first have to divine the semantics, add cases as needed
+      -- 2010-02-11: SUPERSUB also handles general scripts in pre and post,
+      -- sub and super positions.  To distinguish from derivatives I test for
+      -- presence of a comma in 'expr', at least for now.
+      -- 2011-01-03: D(f x,x) produces
+      -- {{{SUPERSUB}{f}{ }{,}}{x}}
+      -- D(f x,x,3) produces
+      -- {{{SUPERSUB}{f}{ }{,,,}}{x}}
+      -- scripts(F,[1,2,3,4])$OutputForm produces
+      -- {{SUPERSUB}{F}{1}{2}{3}{4}}
+      -- scripts(F,[1,empty(),empty(),2])$OutputForm produces
+      -- {{SUPERSUB}{F}{1}{NOTHING}{NOTHING}{2}}
+      position(",", stringify expr, 1) = 0 =>
+        -- Test whether SUPERSUB has 3 or 5 arguments
+	if #args = 5
+	  then
+            --{{SUPERSUB}{F}{1}{2}{3}{4}}  puts 1 in subscript position and then
+            --adds scripts counter clockwise.  Some of the scripts can be empty.
+            tmp : L S := [""," "]$(L S)
+            tmp1 : S := formatMml(args.1,minPrec)
+            if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+            if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+            if member?((tmp4 : S := formatMml(args.4,minPrec)),tmp) then tmp4 := "<none/>"
+            if member?((tmp5 : S := formatMml(args.5,minPrec)),tmp) then tmp5 := "<none/>"
+            "<mmultiscripts>" tmp1 tmp2 tmp3 "<mprescripts/>" tmp5 tmp4 "</mmultiscripts>"
+	  else if #args = 4 then
+	    -- presuper(of1,of2) produces
+	    -- {{SUPERSUB}{f}{ }{ }{z}}
+            tmp : L S := [""," "]$(L S)
+            tmp1 : S := formatMml(args.1,minPrec)
+            if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+            if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+            if member?((tmp4 : S := formatMml(args.4,minPrec)),tmp) then tmp4 := "<none/>"
+            "<mmultiscripts>" tmp1 tmp2 tmp3 "<mprescripts/><none/>" tmp4 "</mmultiscripts>"
+	  else if #args = 3 then
+	    -- super(of1,of2) produces
+	    -- {{SUPERSUB}{f}{ }{z}}
+            tmp : L S := [""," "]$(L S)
+            tmp1 : S := formatMml(args.1,minPrec)
+            if member?((tmp2 : S := formatMml(args.2,minPrec)),tmp) then tmp2 := "<none/>"
+            if member?((tmp3 : S := formatMml(args.3,minPrec)),tmp) then tmp3 := "<none/>"
+            "<mmultiscripts>" tmp1 tmp2 tmp3 "</mmultiscripts>"
+	  else
+	    "<mtext>Problem with number of args in SUPERSUB</mtext>"
       atomE : L E := atomize(expr)
       op : S := stringify first atomE
-      op ~= "SUPERSUB" => "<mtext>Mistake in formatSuperSub: no SUPERSUB1</mtext>"
-      #args ~= 1 => "<mtext>Mistake in SuperSub1: #args <> 1</mtext>"
+      op ~= "SUPERSUB" => "<mtext>Mistake in formatSuperSub: no SUPERSUB</mtext>"
+      #args ~= 1 => "<mtext>Mistake in SuperSub: #args <> 1</mtext>"
       var : E := first args
       -- should be looking at something like {{SUPERSUB}{var}{ }{,,...,}} for
       -- example here's the second derivative of y w.r.t. x
@@ -846,34 +918,61 @@ have to be switched by swapping names.
         commaTest := commaTest","
       s : S := "<mfrac><mrow><msup><mo>&#x02146;</mo><mn>"string(ndiffs)"</mn></msup><mi>"funcS"</mi></mrow><mrow><mo>&#x02146;</mo><msup><mi>"formatMml(first args,minPrec)"</mi><mn>"string(ndiffs)"</mn></msup></mrow></mfrac><mo>&#x02061;</mo><mo>(</mo><mi>"formatMml(first args,minPrec)"</mi><mo>)</mo>"
 
+    formatTensor(expr : E, args : L E, opPrec : I) : S ==
+      s : S := formatMml(first args,minPrec)
+      args := rest args
+      while #args > 0 repeat
+        s := s "<mo>&#x02297;</mo>" formatMml(first args,minPrec)
+        args := rest args
+      s
+
     formatPlex(op : S, args : L E, prec : I) : S ==
       checkarg:Boolean := false
       hold : S
       p : I := position(op,plexOps)
       p < 1 => error "unknown plex op"
-      op = "INTSIGN" => formatIntSign(args,minPrec)
+      --op = "INTSIGN" => formatIntSign(args,minPrec)
       opPrec := plexPrecs.p
       n : I := #args
       (n ~= 2) and (n ~= 3) => error "wrong number of arguments for plex"
+      op = "SIGMA" =>
+	  if #args = 2 then
+	    -- sum(a::OutputForm,b::OutputForm) produces
+	    -- {{SIGMA}{b}{a}}
+	    concat ["<munderover><mo>&Sum;</mo><mrow>",formatMml(args.1,minPrec),"</mrow><none/></munderover>",formatMml(args.2,minPrec)]
+	  else "<mtext>Problem in formatPlex SIGMA</mtext>"
+      op = "SIGMA2" =>
+	  if #args = 3 then
+	    -- sum(a::OutputForm,b::OutputForm,c::OutputForm) produces
+	    -- {{SIGMA2}{b}{c}{a}}
+	    concat ["<munderover><mo>&Sum;</mo><mrow>",formatMml(args.1,minPrec),"</mrow>",formatMml(args.2,minPrec),"</munderover>",formatMml(args.3,minPrec)]
+          else "<mtext>Problem in formatPlex SIGMA2</mtext>"
+      --  checkarg := true
+      --  "<mo>&#x02211;</mo>"
+      -- Sum
+      op = "PI" =>
+	  if #args = 2 then
+	    -- prod(a::OutputForm,b::OutputForm) produces
+	    -- {{PI}{b}{a}}
+	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatMml(args.1,minPrec),"</mrow><none/></munderover>",formatMml(args.2,minPrec)]
+	  else "<mtext>Problem in formatPlex SIGMA</mtext>"
+      op = "PI2" =>
+	  if #args = 3 then
+	    -- prod(a::OutputForm,b::OutputForm,c::OutputForm) produces
+	    -- {{PI2}{b}{c}{a}}
+	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatMml(args.1,minPrec),"</mrow>",formatMml(args.2,minPrec),"</munderover>",formatMml(args.3,minPrec)]
+          else "<mtext>Problem in formatPlex SIGMA2</mtext>"
+      op = "INTSIGN" =>
+          -- int(a::OutputForm) produces
+	  -- {{INTSIGN}{NOTHING}{NOTHING}{a}}
+	  -- int(a::OutputForm,b::OutputForm) produces
+	  -- {{INTSIGN}{b}{NOTHING}{a}}
+	  -- int(a::OutputForm,b::OutputForm,c::OutputForm) produces
+	  -- {{INTSIGN}{b}{c}{a}}
+	  if #args = 3 then
+	    concat ["<munderover><mo>&int;</mo><mrow>",formatMml(args.1,minPrec),"</mrow><mrow>",formatMml(args.2,minPrec),"</mrow></munderover>",formatMml(args.3,minPrec)]
+          else "<mtext>Problem in formatPlex SIGMA2</mtext>"
       s : S :=
-        op = "SIGMA"   =>
-          checkarg := true
-          "<mo>&#x02211;</mo>"
-        -- Sum
-        op = "SIGMA2"   =>
-          checkarg := true
-          "<mo>&#x02211;</mo>"
-        -- Sum
-        op = "PI"      =>
-          checkarg := true
-          "<mo>&#x0220F;</mo>"
-        -- Product
-        op = "PI2"     =>
-          checkarg := true
-          "<mo>&#x0220F;</mo>"
-        -- Product
---        op = "INTSIGN" => "<mo>&#x0222B;</mo>"
-        -- Integral, int
         op = "INDEFINTEGRAL" => "<mo>&#x0222B;</mo>"
         -- Integral, int
         "????"
@@ -990,6 +1089,9 @@ have to be switched by swapping names.
         op = "/"     =>  s := concat ["(frac ",s1," ",s2,")"]
         op = "OVER"  =>  s := concat ["(frac ",s1," ",s2,")"]
         op = "+->"   =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
+	op = "RARROW" => s := concat ["<mrow>",s1,"</mrow><mo>","&#x27f6;","</mo><mrow>",s2,"</mrow>"]
+	op = "%LET" => s := concat ["<mrow>",s1,"</mrow><mo>:=</mo><mrow>",s2,"</mrow>"]
+	op = "<" => s := concat ["<mrow>",s1,"</mrow><mo>","&lt;","</mo><mrow>",s2,"</mrow>"]
         s := concat ["(concat ",s1," _"",op,"_" ",s2,")"]
       group
         op = "OVER" => s
@@ -1159,6 +1261,8 @@ have to be switched by swapping names.
       -- now test for SUB
       position("SUB",op,1) > 0 =>
         formatSub1(first l,args,minPrec)
+      position("TENSOR",op,1) >0 =>
+        formatTensor(first l,args,minPrec)
 
       -- special cases
       member?(op, specialOps) => formatSpecial(op,args,prec)
