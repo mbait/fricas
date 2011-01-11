@@ -55,6 +55,10 @@ Here's a list of test cases that currently format correctly:
 \item paren([of1 for i in 1..4])
 \item SEGMENT(of1,of2)
 \item SEGMENT(of1)
+\item tensor(of1,of2)
+\item rarrow(of1, of2)
+\item of1 < of2
+\item overbar(of1)
 \end{enumerate}
 These tests still fail or give false positives:
 \begin{enumerate}
@@ -66,10 +70,8 @@ These tests still fail or give false positives:
 \item zag(zag(of1, of2),zag(of1, of2))
 \item slash(of1, of2)
 \item assign(of1, of2)
-\item rarrow(of1, of2)
 \item differentiate(of1, 15)
 \item binomial(of1, of2)
-\item tensor(of1,of2)
 \item sub(of1, of2)
 \item super(of1, of2)
 \item presub(of1, of2)
@@ -82,7 +84,6 @@ These tests still fail or give false positives:
 \item dot(of1,4)
 \item prime(of1)
 \item prime(of1, 5)
-\item overbar(of1)
 \item overlabel(of2, of1)
 \item sum(of1)
 \item sum(of1, of2)
@@ -94,7 +95,6 @@ These tests still fail or give false positives:
 \item int(of1, of2)
 \item int(of1, of2, of3)
 \item semicolonSeparate([of1 for i in 1..4])
-\item of1 < of2
 \item exquo(of1, of2)
 \end{enumerate}
 The \spadtype{TexmacsFormat} domain has the capability to format an object with
