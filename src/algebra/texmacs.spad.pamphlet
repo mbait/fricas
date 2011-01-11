@@ -31,8 +31,6 @@ Here's a list of test cases that currently format correctly:
 \item x + y * z
 \item (5 + sqrt 63 + sqrt 847)\verb|^|(1/3)
 \item set [1,2,3]
-\item integrate(x\verb|^|x, x)
-\item integral(x\verb|^|x, x)
 \item multiset [x rem 5 for x in primes(2,1000)]
 \item series(sin(a*x),x=0)
 \item matrix [ [x\verb|^|i + y\verb|^|j for i in 1..3] for j in 1..3]
@@ -45,17 +43,27 @@ Here's a list of test cases that currently format correctly:
 \item infix(of3,[of2 for i in 1..4])
 \item infix(of3, of1, of2)
 \item postfix(of3, of1)
-\item box(prefix(of1, [of2 for i in 1..5]))
-\item label(prefix(of1, [of2 for i in 1..5]), of2)
 \item (matrix\$OutputForm)([[of1, of2], [of2, of1]])
+\item root(of1)
+\item root(of1, of2)
+\item over(of1, of2)
+\item brace(of1)
+\item brace([of1 for i in 1..4])
+\item bracket(of1)
+\item bracket([of1 for i in 1..4])
+\item paren(of1)
+\item paren([of1 for i in 1..4])
+\item SEGMENT(of1,of2)
+\item SEGMENT(of1)
 \end{enumerate}
 These tests still fail or give false positives:
 \begin{enumerate}
 \tt
+\item box(prefix(of1, [of2 for i in 1..5]))
+\item label(prefix(of1, [of2 for i in 1..5]), of2)
+\item integrate(x\verb|^|x, x)
+\item integral(x\verb|^|x, x)
 \item zag(zag(of1, of2),zag(of1, of2))
-\item root(of1)
-\item root(of1, of2)
-\item over(of1, of2)
 \item slash(of1, of2)
 \item assign(of1, of2)
 \item rarrow(of1, of2)
@@ -85,17 +93,9 @@ These tests still fail or give false positives:
 \item int(of1)
 \item int(of1, of2)
 \item int(of1, of2, of3)
-\item brace(of1)
-\item brace([of1 for i in 1..4])
-\item bracket(of1)
-\item bracket([of1 for i in 1..4])
-\item paren(of1)
-\item paren([of1 for i in 1..4])
 \item semicolonSeparate([of1 for i in 1..4])
 \item of1 < of2
 \item exquo(of1, of2)
-\item SEGMENT(of1,of2)
-\item SEGMENT(of1)
 \end{enumerate}
 The \spadtype{TexmacsFormat} domain has the capability to format an object with
 subscripts, superscripts, presubscripts and presuperscripts however
