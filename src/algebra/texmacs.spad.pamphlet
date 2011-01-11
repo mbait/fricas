@@ -592,7 +592,7 @@ have to be switched by swapping names.
         formatNary(";",args,prec)
       op = "TAG" =>
         group concat [formatTexmacs(first args,prec),
-                      "<mo>&#x02192;</mo>",
+                      " _"<rightarrow>_" ",
                         formatTexmacs(second args,prec)]
                          --RightArrow
       op = "SLASH" =>
