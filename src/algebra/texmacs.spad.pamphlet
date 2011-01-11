@@ -922,9 +922,9 @@ have to be switched by swapping names.
       s : S := formatTexmacs(first args,minPrec)
       args := rest args
       while #args > 0 repeat
-        s := s "<mo>&#x02297;</mo>" formatTexmacs(first args,minPrec)
+        s :=  s " _"<otimes>_" " formatTexmacs(first args,minPrec)
         args := rest args
-      s
+      group s
 
     formatPlex(op : S, args : L E, prec : I) : S ==
       checkarg:Boolean := false
