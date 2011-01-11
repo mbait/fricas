@@ -1091,7 +1091,7 @@ have to be switched by swapping names.
         op = "+->"   =>  s := concat ["<mrow>",s1,"</mrow><mo>",op,"</mo><mrow>",s2,"</mrow>"]
 	op = "RARROW" => s := concat ["<mrow>",s1,"</mrow><mo>","&#x27f6;","</mo><mrow>",s2,"</mrow>"]
 	op = "%LET" => s := concat ["<mrow>",s1,"</mrow><mo>:=</mo><mrow>",s2,"</mrow>"]
-	op = "<" => s := concat ["<mrow>",s1,"</mrow><mo>","&lt;","</mo><mrow>",s2,"</mrow>"]
+	op = "<" => s := concat ["(concat ", s1, " _"<less>_" ", s2,")"]
         s := concat ["(concat ",s1," _"",op,"_" ",s2,")"]
       group
         op = "OVER" => s
