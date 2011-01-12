@@ -617,7 +617,7 @@ have to be switched by swapping names.
         group parenthesize ungroup formatTexmacs(first args, minPrec)
       op = "OVERBAR" =>
         null args => ""
-        group concat ["(wide ",formatTexmacs(first args,minPrec)," _"<bar>_")"]
+        concat ["(wide ",formatTexmacs(first args,minPrec)," _"<bar>_")"]
          --OverBar
       op = "ROOT" =>
         null args => ""
