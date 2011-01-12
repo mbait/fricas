@@ -60,6 +60,7 @@ Here's a list of test cases that currently format correctly:
 \item of1 < of2
 \item overbar(of1)
 \item binomial(of1, of2)
+\item slash(of1, of2)
 \end{enumerate}
 These tests still fail or give false positives:
 \begin{enumerate}
@@ -69,7 +70,6 @@ These tests still fail or give false positives:
 \item integrate(x\verb|^|x, x)
 \item integral(x\verb|^|x, x)
 \item zag(zag(of1, of2),zag(of1, of2))
-\item slash(of1, of2)
 \item assign(of1, of2)
 \item differentiate(of1, 15)
 \item sub(of1, of2)
@@ -597,7 +597,7 @@ have to be switched by swapping names.
                          --RightArrow
       op = "SLASH" =>
         group concat [formatTexmacs(first args, prec),
-                      "<mo>/</mo>", formatTexmacs(second args,prec)]
+                      " _"/_" ", formatTexmacs(second args,prec)]
       op = "VCONCAT" =>
         group concat("<mtable><mtr>",
                      concat(concat([concat("<mtd>",concat(formatTexmacs(u, minPrec),"</mtd>"))
