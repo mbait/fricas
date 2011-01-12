@@ -299,6 +299,19 @@
   #+:lispworks (lispworks:environment-variable var-name)
   )
 
+;;; Command-line arguments
+
+(defun |getCLArgs| ()
+  #+:GCL si::*command-args*
+  #+:cmu extensions:*command-line-words*
+  #+:sbcl sb-ext::*posix-argv*
+  #+:clisp ext:*args*
+  #+:openmcl ccl::command-line-arguments
+  #+:ecl ext:command-args
+  #+:poplog '()
+  #+:lispworks system:*line-arguments-list*
+  )
+
 ;;; Silent loading of files
 
 (defun |load_quietly| (f)
