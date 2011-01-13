@@ -93,7 +93,9 @@ SpadProcess *spad_process_list = NULL;
 char ClefCommandLine[256];
 
 #define BufSize      4096       /* size of communication buffer */
+#define EVAL_STR_LEN 1024		/* size for eval code */
 char big_bad_buf[BufSize];      /* big I/O buffer */
+char eval_code[EVAL_STR_LEN + 1];
 
 Sock *session_io = NULL;        /* socket connecting to session manager */
 
@@ -184,6 +186,8 @@ process_arguments(int argc,char ** argv)
       VerifyRecordFile = argv[++arg];
     else if (strcmp(argv[arg], "-paste")  == 0)
       PasteFile = argv[++arg];
+    else if (strcmp(argv[arg], "-eval") == 0)
+      strncat(strcpy(eval_code, " -eval "), argv[++arg], EVAL_STR_LEN);
     else {
       fprintf(stderr, "Usage: sman <-clef|-noclef> \
 <-gr|-nogr> <-ht|-noht> <-iw|-noiw> <-nag|-nonag> <-nox> <-comp> <-ws spad_workspace> \
@@ -606,6 +610,7 @@ fork_Axiom(void)
       exit(-1);
     }
     strcpy(augmented_ws_path,ws_path);          /* write the name    */
+	strcat(augmented_ws_path, eval_code);		/* pass eval code directly to interpreter */
     /* Pass '--' to make sure that argument passed to AXIOMsys
        is not mistaken as Lisp kernel name (needed for Closure CL). */
     strcat(augmented_ws_path," -- ");

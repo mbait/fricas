@@ -118,9 +118,21 @@ fi
 rootwsdir=$SPAD/bin
 
 # 2. Process command line arguments.
+otheropts=""
+
+if [ "$1" = "-eval" ] ; then
+	shift
+	if [ -z $* ] ; then
+		echo "Parameter -eval must be provided with a value"
+		ciao
+	else
+		otheropts="-eval $1"
+		shift
+	fi
+fi
 
 if [ "$*" = "-nosman" ] ; then
-    exec $SPAD/bin/AXIOMsys
+    exec $SPAD/bin/AXIOMsys $otheropts
     exit 1
 fi
 
@@ -130,11 +142,9 @@ list=no
 go=yes
 wsname=AXIOMsys
 
-otheropts=""
-
 if [ ! -f $SPAD/lib/viewman ] ; then
     echo "viewman not present, disabling graphics"
-    otheropts="-nogr"
+    otheropts="$otheropts -nogr"
 fi
 
 
@@ -164,7 +174,6 @@ while [ "$*" != "" ] ; do
 	-h)
 		go=no
 		;;
-
 
 	*)	echo "Unknown option: $1"
 		echo "To use a specific workspace use, e.g.: spad -ws $1"
