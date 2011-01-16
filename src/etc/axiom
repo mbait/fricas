@@ -122,17 +122,17 @@ otheropts=""
 
 if [ "$1" = "-eval" ] ; then
 	shift
-	if [ -z $* ] ; then
+	if [ -z "$*" ] ; then
 		echo "Parameter -eval must be provided with a value"
 		ciao
 	else
-		otheropts="-eval $1"
+		otheropts="-eval \"$1\""
 		shift
 	fi
 fi
 
 if [ "$*" = "-nosman" ] ; then
-    exec $SPAD/bin/AXIOMsys $otheropts
+    eval "$SPAD/bin/AXIOMsys $otheropts"
     exit 1
 fi
 
@@ -214,8 +214,8 @@ fi
 
 if [ $go = no ] ; then
 	echo "Would now start the processes."
-	echo exec $SPAD/bin/sman $otheropts -ws $serverws
+	echo "eval $SPAD/bin/sman $otheropts -ws $serverws"
 	exit 0
 fi
 
-exec $SPAD/bin/sman $otheropts -ws $serverws
+eval "$SPAD/bin/sman $otheropts -ws $serverws"
