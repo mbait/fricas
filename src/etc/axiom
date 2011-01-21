@@ -20,6 +20,8 @@
 #      [-sessionprog fname] use named program for session
 #      [-clientprog fname]  use named program for spadclient
 #      [-h]		    show usage
+#      [-eval code]         evaluate specified code at start
+#      [-texmacs]           setup Fricas for communication in TeXmacs protocol
 #
 #
 
@@ -63,6 +65,8 @@ echo "     [-list]              list workspaces only"
 #echo "     [-sessionprog fname] use named program for session"
 #echo "     [-clientprog fname]  use named program for spadclient"
 echo "     [-h]                 show usage"
+echo "     [-eval code]         evaluate specified code at start"
+echo "     [-texmacs]           setup Fricas for communication in TeXmacs protocol"
 }
 
 # 1. Ensure the environment is set.
