@@ -187,7 +187,7 @@ process_arguments(int argc,char ** argv)
     else if (strcmp(argv[arg], "-paste")  == 0)
       PasteFile = argv[++arg];
     else if (strcmp(argv[arg], "-eval") == 0)
-	  sprintf(eval_code, " -eval \"%s\"", argv[++arg]);
+	  sprintf(eval_code, "%s -eval \"%s\"", eval_code, argv[++arg]);
     else {
       fprintf(stderr, "Usage: sman <-clef|-noclef> \
 <-gr|-nogr> <-ht|-noht> <-iw|-noiw> <-nag|-nonag> <-nox> <-comp> <-ws spad_workspace> \

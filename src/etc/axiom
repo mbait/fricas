@@ -181,8 +181,7 @@ while [ "$*" != "" ] ; do
 			echo "Parameter -eval must be provided with a value"
 			ciao
 		else
-			otheropts="-eval \"$1\""
-			shift
+			otheropts="$otheropts -eval \"$1\""
 		fi
 		;;
 
