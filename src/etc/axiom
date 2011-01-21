@@ -122,21 +122,16 @@ fi
 rootwsdir=$SPAD/bin
 
 # 2. Process command line arguments.
-otheropts=""
-
-if [ "$1" = "-eval" ] ; then
-	shift
-	if [ -z "$*" ] ; then
-		echo "Parameter -eval must be provided with a value"
-		ciao
-	else
-		otheropts="-eval \"$1\""
-		shift
-	fi
+format=')set output tex on'
+markers=")lisp (setf |\\\$ioHook| (lambda (x &optional args) (cond ((eq x '|startPrompt|) (princ (concat (code-char 2) \\\"prompt\\\#\\\") ))  ((eq x '|endOfTeXmacsOutput|) (princ (concat (code-char 5) (code-char 10)))) ((eq x '|startTeXmacsOutput|) (princ (code-char 2)))  ((eq x '|startKeyedMsg|)  (princ (concat (code-char 2) \\\"verbatim:\\\")))  ((eq x '|endOfKeyedMsg|)  (princ (code-char 5)))  ((eq x '|endOfPrompt|) (princ (code-char 5) ))  )))"
+if [ "$*" = "-texmacs" ] ; then
+	eval "$SPAD/bin/AXIOMsys -eval \"$format\" -eval \"$markers\""
+	exit
 fi
 
+
 if [ "$*" = "-nosman" ] ; then
-    eval "$SPAD/bin/AXIOMsys $otheropts"
+    eval "$SPAD/bin/AXIOMsys"
     exit 1
 fi
 
@@ -145,6 +140,7 @@ fi
 list=no
 go=yes
 wsname=AXIOMsys
+otheropts=""
 
 if [ ! -f $SPAD/lib/viewman ] ; then
     echo "viewman not present, disabling graphics"
@@ -177,6 +173,17 @@ while [ "$*" != "" ] ; do
 
 	-h)
 		go=no
+		;;
+
+	-eval)
+		shift
+		if [ -z "$*" ] ; then
+			echo "Parameter -eval must be provided with a value"
+			ciao
+		else
+			otheropts="-eval \"$1\""
+			shift
+		fi
 		;;
 
 	*)	echo "Unknown option: $1"
