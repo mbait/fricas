@@ -93,9 +93,10 @@ SpadProcess *spad_process_list = NULL;
 char ClefCommandLine[256];
 
 #define BufSize      4096       /* size of communication buffer */
-#define EVAL_STR_LEN 1024       /* size for eval code */
 char big_bad_buf[BufSize];      /* big I/O buffer */
-char eval_code[EVAL_STR_LEN + 1];
+char *eval_code;
+const char *eval_fmt = "%s -eval \"%s\"";
+size_t eval_buf_size = 1024;
 
 Sock *session_io = NULL;        /* socket connecting to session manager */
 
@@ -186,8 +187,13 @@ process_arguments(int argc,char ** argv)
       VerifyRecordFile = argv[++arg];
     else if (strcmp(argv[arg], "-paste")  == 0)
       PasteFile = argv[++arg];
-    else if (strcmp(argv[arg], "-eval") == 0)
-      sprintf(eval_code, "%s -eval \"%s\"", eval_code, argv[++arg]);
+    else if (strcmp(argv[arg], "-eval") == 0) {
+      if (strlen(eval_code) + strlen(argv[++arg]) + strlen(eval_fmt) > eval_buf_size) {
+        eval_buf_size = 2 * (strlen(eval_code) + strlen(argv[arg]) + strlen(eval_fmt));
+        eval_code = (char *)realloc(eval_code, eval_buf_size + 1);
+      }
+      sprintf(eval_code, eval_fmt, eval_code, argv[arg]);
+    }
     else {
       fprintf(stderr, "Usage: sman <-clef|-noclef> \
 <-gr|-nogr> <-ht|-noht> <-iw|-noiw> <-nag|-nonag> <-nox> <-comp> <-ws spad_workspace> \
@@ -555,7 +561,7 @@ start_the_graphics(void)
 static void
 fork_Axiom(void)
 {
-  char augmented_ws_path[256];  /* will append directory path */
+  char *augmented_ws_path;  /* will append directory path */
   char *tmp_pointer;
   SpadProcess *proc;
 
@@ -609,6 +615,7 @@ fork_Axiom(void)
       perror("setting the term buffer");
       exit(-1);
     }
+	augmented_ws_path = (char *)malloc(2 * strlen(ws_path) + strlen(eval_code) + strlen(" -- ") + 1);
     strcpy(augmented_ws_path,ws_path);          /* write the name    */
 	strcat(augmented_ws_path,eval_code);		/* pass eval code directly to interpreter */
     /* Pass '--' to make sure that argument passed to AXIOMsys
@@ -622,6 +629,7 @@ fork_Axiom(void)
 
     /*    fprintf(stderr, "Cannot execute the %s system.\n", ws_path); */
 
+	free(augmented_ws_path);
     exit(0);
   }
 }
@@ -857,6 +865,7 @@ main(int argc, char *argv[],char *envp[])
 {
   if (tpd == 1) fprintf(stderr,"sman:main entered\n");
   bsdSignal(SIGINT,  SIG_IGN,RestartSystemCalls);
+  *(eval_code = (char *)malloc(eval_buf_size + 1)) = '\0';
   process_options(argc, argv);
 
   init_term_io();
@@ -882,6 +891,7 @@ main(int argc, char *argv[],char *envp[])
   }
   manage_spad_io(ptcNum);
   if (tpd == 1) fprintf(stderr,"sman:main exit\n");
+  free(eval_code);
   return(0);
 }
 
