@@ -95,7 +95,7 @@ char ClefCommandLine[256];
 #define BufSize      4096       /* size of communication buffer */
 char big_bad_buf[BufSize];      /* big I/O buffer */
 char *eval_code;
-const char *eval_fmt = "%s -eval \"%s\"";
+const char *eval_fmt = " -eval \"\"";
 size_t eval_buf_size = 1024;
 
 Sock *session_io = NULL;        /* socket connecting to session manager */
@@ -192,7 +192,10 @@ process_arguments(int argc,char ** argv)
         eval_buf_size = 2 * (strlen(eval_code) + strlen(argv[arg]) + strlen(eval_fmt));
         eval_code = (char *)realloc(eval_code, eval_buf_size + 1);
       }
-      sprintf(eval_code, eval_fmt, eval_code, argv[arg]);
+      strcat(eval_code, " -eval ");
+      strcat(eval_code, "\"");
+      strcat(eval_code, argv[arg]);
+      strcat(eval_code, "\"");
     }
     else {
       fprintf(stderr, "Usage: sman <-clef|-noclef> \
