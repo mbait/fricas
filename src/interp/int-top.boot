@@ -95,12 +95,11 @@ $ncmPhase :=      NIL
 
 evalInlineCode() ==
   args := getCLArgs()
-  while #args > 0 repeat
+  while args repeat
     arg := CAR args
-    if arg = '"-eval" then
-      CATCH('SPAD__READER,CATCH('top__level,parseAndEvalStr CADR(args)))
-      args := CDDR args
-    else
+    args := CDR args
+    if arg = '"-eval" and args then
+      CATCH('SPAD__READER,CATCH('top__level,parseAndEvalStr CAR(args)))
       args := CDR args
 
 spad() ==
