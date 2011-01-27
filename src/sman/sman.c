@@ -93,7 +93,7 @@ SpadProcess *spad_process_list = NULL;
 char ClefCommandLine[256];
 
 #define BufSize      4096       /* size of communication buffer */
-#define EVAL_STR_LEN 1024		/* size for eval code */
+#define EVAL_STR_LEN 1024       /* size for eval code */
 char big_bad_buf[BufSize];      /* big I/O buffer */
 char eval_code[EVAL_STR_LEN + 1];
 
@@ -187,7 +187,7 @@ process_arguments(int argc,char ** argv)
     else if (strcmp(argv[arg], "-paste")  == 0)
       PasteFile = argv[++arg];
     else if (strcmp(argv[arg], "-eval") == 0)
-	  sprintf(eval_code, "%s -eval \"%s\"", eval_code, argv[++arg]);
+      sprintf(eval_code, "%s -eval \"%s\"", eval_code, argv[++arg]);
     else {
       fprintf(stderr, "Usage: sman <-clef|-noclef> \
 <-gr|-nogr> <-ht|-noht> <-iw|-noiw> <-nag|-nonag> <-nox> <-comp> <-ws spad_workspace> \
