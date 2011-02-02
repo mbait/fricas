@@ -1015,7 +1015,9 @@ have to be switched by swapping names.
       bodyL : L E := (rest rest args pretend L E)
       (stringify first bodyL).1 = char "*" =>
         bodyL := (first bodyL pretend L E)
-        concat ["(concat ", formatTexmacs(first rest bodyL, opPrec), " _"*<mathd>_""]
+        bvar : L E := (first rest rest bodyL pretend L E)
+        bvarS : S := stringify first rest rest bvar
+        concat ["(concat ", formatTexmacs(first rest bodyL, opPrec), " _"*<mathd>", bvarS, "_")"]
       formatTexmacs(first bodyL, opPrec)
 
     formatMatrix(args : L E) : S ==
