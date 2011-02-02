@@ -1056,8 +1056,8 @@ have to be switched by swapping names.
       group concat [op,parenthesize formatNary(",",args,minPrec)]
 
     formatNullary(op : S) ==
-      op = "NOTHING" => ""
-      group concat ["<mo>",op,"</mo><mo>(</mo><mo>)</mo>"]
+      op = "NOTHING" => "_"_""
+      group concat ["_"", op, "_""]
 
     formatUnary(op : S, arg : E, prec : I) ==
       p : I := position(op,unaryOps)
