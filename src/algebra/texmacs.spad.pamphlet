@@ -69,6 +69,9 @@ Here's a list of successeful test cases:
 \item sum(of1)
 \item sum(of1, of2)
 \item sum(of1,of2,of3)
+\item prod(of1)
+\item prod(of1, of2)
+\item prod(of1,of2,of3)
 \end{enumerate}
 These tests still fail or give false positives:
 \begin{enumerate}
@@ -91,9 +94,6 @@ These tests still fail or give false positives:
 \item prime(of1)
 \item prime(of1, 5)
 \item overlabel(of2, of1)
-\item prod(of1)
-\item prod(of1, of2)
-\item prod(of1,of2,of3)
 \item semicolonSeparate([of1 for i in 1..4])
 \item exquo(of1, of2)
 \end{enumerate}
@@ -950,14 +950,14 @@ have to be switched by swapping names.
 	  if #args = 2 then
 	    -- prod(a::OutputForm,b::OutputForm) produces
 	    -- {{PI}{b}{a}}
-	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatTexmacs(args.1,minPrec),"</mrow><none/></munderover>",formatTexmacs(args.2,minPrec)]
-	  else "<mtext>Problem in formatPlex SIGMA</mtext>"
+	    concat ["(big-around _"<prod>_" (concat (rsub ",formatTexmacs(args.1,minPrec),") ",formatTexmacs(args.2,minPrec),"))"]
+	  else "_"Problem in formatPlex SIGMA_""
       op = "PI2" =>
 	  if #args = 3 then
 	    -- prod(a::OutputForm,b::OutputForm,c::OutputForm) produces
 	    -- {{PI2}{b}{c}{a}}
-	    concat ["<munderover><mo>&Pi;</mo><mrow>",formatTexmacs(args.1,minPrec),"</mrow>",formatTexmacs(args.2,minPrec),"</munderover>",formatTexmacs(args.3,minPrec)]
-          else "<mtext>Problem in formatPlex SIGMA2</mtext>"
+	    concat ["(big-around _"<prod>_" (concat (rsub ",formatTexmacs(args.1,minPrec),") (rsup ",formatTexmacs(args.2,minPrec),") ",formatTexmacs(args.3,minPrec),"))"]
+          else "_"Problem in formatPlex SIGMA2_""
       op = "INTSIGN" =>
           -- int(a::OutputForm) produces
 	  -- {{INTSIGN}{NOTHING}{NOTHING}{a}}
