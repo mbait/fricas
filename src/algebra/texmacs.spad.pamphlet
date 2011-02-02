@@ -970,7 +970,7 @@ have to be switched by swapping names.
 	  -- int(a::OutputForm,b::OutputForm,c::OutputForm) produces
 	  -- {{INTSIGN}{b}{c}{a}}
 	  if #args = 3 then
-	    concat ["(big-around _"<int>_" (concat (rsup ",formatTexmacs(args.1,minPrec), ") (rsub ",formatTexmacs(args.2,minPrec),") ",formatIntBody(args,minPrec), " (big _"._")))"]
+	    concat ["(big-around _"<int>_" (concat (rsub ",formatTexmacs(args.1,minPrec), ") (rsup ",formatTexmacs(args.2,minPrec),") ",formatIntBody(args,minPrec), " (big _"._")))"]
           else "(concat _"Problem in formatPlex SIGMA2_")"
       s : S :=
         op = "INDEFINTEGRAL" => "<mo>&#x0222B;</mo>"
