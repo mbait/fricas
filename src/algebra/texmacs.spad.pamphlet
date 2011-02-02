@@ -23,7 +23,7 @@ of1 := ('f)::OutputForm \\
 of2 := ('z)::OutputForm \\
 of3:=('+)::OutputForm \\
 } \\
-Here's a list of test cases that currently format correctly:
+Here's a list of successeful test cases:
 \begin{enumerate}
 \tt
 \item x
@@ -61,14 +61,17 @@ Here's a list of test cases that currently format correctly:
 \item overbar(of1)
 \item binomial(of1, of2)
 \item slash(of1, of2)
+\item integrate(x\verb|^|x, x)
+\item integral(x\verb|^|x, x)
+\item int(of1)
+\item int(of1, of2)
+\item int(of1, of2, of3)
 \end{enumerate}
 These tests still fail or give false positives:
 \begin{enumerate}
 \tt
 \item box(prefix(of1, [of2 for i in 1..5]))
 \item label(prefix(of1, [of2 for i in 1..5]), of2)
-\item integrate(x\verb|^|x, x)
-\item integral(x\verb|^|x, x)
 \item zag(zag(of1, of2),zag(of1, of2))
 \item assign(of1, of2)
 \item differentiate(of1, 15)
@@ -91,9 +94,6 @@ These tests still fail or give false positives:
 \item prod(of1)
 \item prod(of1, of2)
 \item prod(of1,of2,of3)
-\item int(of1)
-\item int(of1, of2)
-\item int(of1, of2, of3)
 \item semicolonSeparate([of1 for i in 1..4])
 \item exquo(of1, of2)
 \end{enumerate}
@@ -292,7 +292,7 @@ These are the local functions:
     group:          S -> S
     formatBinary:   (S,L E, I) -> S
     formatFunction: (S,L E, I) -> S
-    formatIntSign:  (L E, I) -> S
+    formatIntBody:  (L E, I) -> S
     formatMatrix:   L E -> S
     formatNary:     (S,L E, I) -> S
     formatNaryNoGroup: (S,L E, I) -> S
@@ -669,7 +669,7 @@ have to be switched by swapping names.
 	-- {{BINOMIAL}{f}{z}}
 	concat ["(binom ", formatTexmacs(args.1,minPrec), " ", formatTexmacs(args.2,minPrec), ")"]
       op = "NOTHING" =>
-        "<none/>"
+        "_"_""
       op = "ZAG" =>
         -- this is the output from continuedFraction(314159/100000)
         -- {{+}{3}{{ZAG}{1}{7}}{{ZAG}{1}{15}}{{ZAG}{1}{1}}{{ZAG}{1}{25}}{{ZAG}{1}{1}}{{ZAG}{1}{7}}{{ZAG}{1}{4}}}
@@ -970,8 +970,8 @@ have to be switched by swapping names.
 	  -- int(a::OutputForm,b::OutputForm,c::OutputForm) produces
 	  -- {{INTSIGN}{b}{c}{a}}
 	  if #args = 3 then
-	    concat ["<munderover><mo>&int;</mo><mrow>",formatTexmacs(args.1,minPrec),"</mrow><mrow>",formatTexmacs(args.2,minPrec),"</mrow></munderover>",formatTexmacs(args.3,minPrec)]
-          else "<mtext>Problem in formatPlex SIGMA2</mtext>"
+	    concat ["(big-around _"<int>_" (concat (rsup ",formatTexmacs(args.1,minPrec), ") (rsub ",formatTexmacs(args.2,minPrec),") ",formatIntBody(args,minPrec), " (big _"._")))"]
+          else "(concat _"Problem in formatPlex SIGMA2_")"
       s : S :=
         op = "INDEFINTEGRAL" => "<mo>&#x0222B;</mo>"
         -- Integral, int
@@ -1006,44 +1006,17 @@ have to be switched by swapping names.
 -- getting ugly parentheses on fractions
       group s
 
-    formatIntSign(args : L E, opPrec : I) : S ==
+    formatIntBody(args : L E, opPrec : I) : S ==
       -- the original OutputForm expression looks something like this:
       -- {{INTSIGN}{NOTHING or lower limit?}
       -- {bvar or upper limit?}{{*}{integrand}{{CONCAT}{d}{axiom var}}}}
       -- the args list passed here consists of the rest of this list, i.e.
       -- starting at the NOTHING or ...
-      (stringify first args) = "NOTHING" =>
-        -- the bound variable is the second one in the argument list
-        bvar : E := first rest args
-        bvarS : S := stringify bvar
-        tmpS : S
-        i : I := 0
-        u1 : US
-        u2 : US
-        -- this next one atomizes the integrand plus differential
-        atomE : L E := atomize(first rest rest args)
-        -- pick out the bound variable used by axiom
-        varRS : S := stringify last(atomE)
-        tmpLE : L E := ((first rest rest args) pretend L E)
-        integrand : S := formatTexmacs(first rest tmpLE,minPrec)
-        -- replace the bound variable, i.e. axiom uses someting of the form
-        -- %A for the bound variable and puts the original variable used
-        -- in the input command as a superscript on the integral sign.
-        -- I'm assuming that the axiom variable is 2 characters.
-        while (i := position(varRS,integrand,i+1)) > 0 repeat
-          u1 := segment(1,i-1)$US
-          u2 := segment(i+2,#integrand)$US
-          integrand := concat [integrand.u1,bvarS,integrand.u2]
-        concat ["(concat (big _"int_") " integrand " _"*_"" " _"<mathd>_" _"" bvarS "_" (big _"._"))"]
-
-      lowlim : S := stringify first args
-      highlim : S := stringify first rest args
-      bvar : E := last atomize(first rest rest args)
-      bvarS : S := stringify bvar
-      tmpLE : L E := ((first rest rest args) pretend L E)
-      integrand : S := formatTexmacs(first rest tmpLE,minPrec)
-      concat ["<mrow><munderover><mo>&#x0222B;</mo><mi>" lowlim "</mi><mi>" highlim "</mi></munderover>" integrand "<mo>&#x02146;</mo><mi>" bvarS "</mi></mrow>"]
-
+      bodyL : L E := (rest rest args pretend L E)
+      (stringify first bodyL).1 = char "*" =>
+        bodyL := (first bodyL pretend L E)
+        concat ["(concat ", formatTexmacs(first rest bodyL, opPrec), " _"*<mathd>_""]
+      formatTexmacs(first bodyL, opPrec)
 
     formatMatrix(args : L E) : S ==
       -- format for args is [[ROW ...],[ROW ...],[ROW ...]]
