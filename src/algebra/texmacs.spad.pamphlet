@@ -551,13 +551,13 @@ have to be switched by swapping names.
     postcondition(str: S): S ==
 --      str := ungroup str
       len : I := #str
-      plusminus : S := "<mo>+</mo><mo>-</mo>"
+      plusminus : S := "_"+_" (concat _"-_""
       pos : I := position(plusminus,str,1)
       if pos > 0 then
         ustart:US := segment(1,pos-1)$US
-        uend:US := segment(pos+20,len)$US
-        str := concat [str.ustart,"<mo>-</mo>",str.uend]
-        if pos < len-18 then
+        uend:US := segment(pos+15,len)$US
+        str := concat [str.ustart,"(concat _"-_"",str.uend]
+        if pos < len-13 then
           str := postcondition(str)
       str
 
