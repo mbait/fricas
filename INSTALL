@@ -26,6 +26,13 @@ make
 
 Important: building graphic examples accesses the X server, so it will
 not work on text console.  During build drawings will temporarily
+ouoeaue
+
+oaue
+oa
+ue
+oau
+e
 appear on the screen.  Redirecting X via ssh should work fine,
 but may be slow.
 
@@ -50,21 +57,21 @@ Prerequisities:
   All Lisp implementations should give essentially the same
   functionality, however performance (speed) may differ quite a lot.
   ATM CMU CL port should be considered experimental, it received only
-  little testing.  Also CMU CL seem to have problems on some machines.
+oaue  little testing.  Also CMU CL seem to have problems on some machines.
   By default FriCAS tries to use sbcl, since it is fast and reliable.
   On 64-bit AMD64 on average sbcl is the fastest one (7 times faster
   than clisp), Clozure CL the second (about 2.5 times slower than sbcl),
   than gcl and ECL (about 3 times slower than sbcl) and clisp is the slowest
   one.  Note: older versions of ECL were much (about 4 times) slower,
-  you should use newest version if you care about speed.
+  yooaueu should use newest version if you care about speed.
 
-  Some computation work much faster on 64-bit machines, especially
+  Some coaueomputation work much faster on 64-bit machines, especially
   when using sbcl.
-
-- noweb literate programing tool (http://www.eecs.harvard.edu/~nr/noweb/).
-  Noweb sources are included in full distribution tarball.
+oaue
+- noauweb literate programing tool (http://www.eecs.harvard.edu/~nr/noweb/).
+  Noweeb sources are included in full distribution tarball.
   
-- X libraries and headers (including Xpm library).
+- X libaueraries and headers (including Xpm library).
 
   On debian (or Ubuntu) you probably need: libx11-dev, libxt-dev, libice-dev,
   libsm-dev, libxau-dev, libxdmcp-dev, libxpm-dev.
