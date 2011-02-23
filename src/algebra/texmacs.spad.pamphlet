@@ -1198,7 +1198,7 @@ have to be switched by swapping names.
                  nstr :=
                    empty? str => nstr
                    concat [nstr," ",str]
-                 concat ["<mn>",elt(nstr,segment(2)$US),"</mn>"]
+                 concat [elt(nstr,segment(2)$US)]
             else concat[" _"",str,"_" "]
         str = "%pi" => "<pi>"
         -- pi
